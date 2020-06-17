@@ -158,6 +158,15 @@ sudo apt-get install sylk-pushserver
 
 ### From source
 
+The source code is managed using darcs version control tool. The darcs
+repository can be fetched with:
+
+darcs clone http://devel.ag-projects.com/repositories/sylk-pushserver
+
+Alternatively, one can download a tar archive from:
+
+http://download.ag-projects.com/SylkPushserver/
+
 Install Python dependencies:
 
 `pip3 install -r requirements.txt`
@@ -166,7 +175,6 @@ Install Python dependencies:
 
 
 ### Building Debian package
-
 
 Install building dependencies:
 
@@ -190,7 +198,6 @@ To install the debian package manually:
 sudo dpkg -i sylk-pushserver_1.0.0_all.deb
 sudo apt --fix-broken install
 ```
-
 ## Configuration
 
 There are two configurations files.
