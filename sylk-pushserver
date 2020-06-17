@@ -1,0 +1,92 @@
+#!/usr/bin/python3
+import argparse
+import datetime
+import logging
+
+import uvicorn
+
+from pushserver.resources import settings
+from pushserver.resources.utils import (log_event, resources_available,
+                                        ssl_cert, try_again)
+
+import logging
+logging.getLogger("uvicorn").setLevel(logging.WARN)
+
+parser = argparse.ArgumentParser(add_help=False)
+parser.add_argument('-h', '--help',
+                    action='help',
+                    default=argparse.SUPPRESS,
+                    help='Show this help message and exit.')
+
+parser.add_argument("--ip",
+                    default='',
+                    help="If set, server will run in its address")
+
+parser.add_argument("--port",
+                    default='',
+                    help="If set, server will run in its address")
+
+parser.add_argument("--config_dir",
+                    default='/etc/sylk-pushserver',
+                    help="Specify a config directory that contains "
+                         "config.ini and applications.ini files "
+                         "and credentials directory, "
+                         "'/etc/sylk-pushserver' by default.")
+
+parser.add_argument("--debug",
+                    action="store_true",
+                    default=False,
+                    help="If set, log headers and body requests to log file.")
+
+args = parser.parse_args()
+
+logging.basicConfig(level=logging.INFO)
+logging.info(f'{datetime.datetime.now()} Starting Sylk Pushserver...')
+
+settings.init(args.config_dir, args.debug, args.ip, args.port)
+
+if __name__ == '__main__':
+
+    if not settings.params.dir['error'] or 'default' in settings.params.dir['error']:
+        sock_available = False
+        while not sock_available:
+            host = settings.params.server['host']
+            port = int(settings.params.server['port'])
+            tls_cert = settings.params.server['tls_cert']
+            sock_available = resources_available(host, port)
+            if sock_available:
+                if tls_cert:
+                    if ssl_cert(tls_cert):
+                        msg = f'Starting app over SSL...'
+                        print(msg)
+                        log_event(loggers=settings.params.loggers,
+                                  msg=msg, level='info')
+                        uvicorn.run('pushserver.resources.app:app', host=host,
+                                    port=port, ssl_certfile=tls_cert,
+                                    acces_log=False, log_level='error')
+                        break
+                    else:
+                        msg = f'{tls_cert} is not a valid ssl cert, app will be run without it'
+                        print(msg)
+                        log_event(loggers=settings.params.loggers,
+                                  msg=msg, level='deb')
+                        uvicorn.run('pushserver.resources.server:server',
+                                    host=host, port=port,
+                                    access_log=False, log_level='error')
+                        break
+                else:
+                    uvicorn.run('pushserver.resources.server:server',
+                                host=host, port=port,
+                                access_log=False, log_level='error')
+                    break
+            else:
+                try_again(timer=30,
+                          host=host, port=port,
+                          start_error=settings.params.dir['error'],
+                          loggers=settings.params.loggers)
+
+    else:
+        log_event(loggers=settings.params.loggers,
+                  msg=settings.params.dir['error'],
+                  level='error')
+        print(settings.params.dir['error'])

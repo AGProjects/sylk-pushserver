@@ -1,0 +1,10 @@
+[Unit]
+Description=Sylk Push Notifications server
+After=network.target
+ 
+[Service]
+ExecStart=/usr/bin/sylk-pushserver --config_dir /etc/sylk-pushserver/
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target

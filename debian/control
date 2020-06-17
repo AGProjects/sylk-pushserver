@@ -1,0 +1,31 @@
+Source: sylk-pushserver
+Maintainer: AG Projects <support@ag-projects.com>
+Uploaders: Adrian Georgescu <ag@ag-projects.com>, Tijmen de Mes <tijmen@ag-projects.com>
+Section: net
+Priority: optional
+Standards-Version: 4.3.0
+Build-Depends: debhelper (>= 11~),
+               python3 (>= 3.7),
+               dh-virtualenv (>= 1.0),
+               python3-setuptools,
+               python3-pip,
+               python3-dev,
+               rename
+
+X-Python3-Version: >= 3.7
+Package: sylk-pushserver
+Architecture: any
+Section: net
+Depends: ${misc:Depends}, ${shlibs:Depends}, sensible-utils,
+         python3 (>= 3.7),
+         python3-oauth2client (>= 4.1.2),
+         python3-pyinotify (>= 0.9.6),
+         python3-requests (>= 2.21),
+         python3-systemd (>= 0.16.1),
+         python3-uvicorn (>=  0.3)
+Enhances: sylkserver-webrtc-gateway
+Description: Mobile push notifications for RTC infrastructures
+ Sylk Pushserver was designed to act as a central dispatcher for mobile push
+ notifications inside RTC provider infrastructures.  Both the provider and
+ the mobile application customer, in the case of a shared infrastructure,
+ can easily audit problems related to the processing of push notifications.

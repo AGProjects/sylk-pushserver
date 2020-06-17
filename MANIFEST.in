@@ -1,0 +1,30 @@
+include LICENSE
+include README.md
+include MANIFEST.in
+
+include __info__.py
+recursive-include config *.sample
+recursive-include config *.py
+include config/opensips.cfg
+
+include scripts/sylk-pushclient
+include debian-requirements.txt 
+include requirements.txt
+
+include debian/changelog
+include debian/compat
+include debian/control
+include debian/copyright
+include debian/rules
+include debian/docs
+include debian/dirs
+include debian/source/format
+include debian/source/lintian-overrides
+include debian/*links
+include debian/*install
+include debian/*logrotate
+include debian/*service
+include debian/*examples
+
+include *.py
+recursive-include pushserver *.py

@@ -1,0 +1,20 @@
+Metadata-Version: 1.1
+Name: sylk-pushserver
+Version: 1.0.0
+Summary: Mobile push notifications for RTC infrastructures
+Home-page: http://sylkserver.com
+Author: Bibiana Rivadeneira
+Author-email: support@ag-projects.com
+License: GPL v3
+Description: 
+        Sylk Pushserver was designed to act as a central dispatcher for mobile push
+        notifications inside RTC provider infrastructures.  Both the provider and
+        the mobile application customer, in the case of a shared infrastructure, can
+        easily audit problems related to the processing of push notifications. 
+        
+Platform: Platform Independent
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Service Providers
+Classifier: License :: GPL v3
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python

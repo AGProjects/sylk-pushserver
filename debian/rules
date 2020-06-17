@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE = 1
+export SETUPTOOLS_DEB_LAYOUT = 1
+export DH_VIRTUALENV_INSTALL_ROOT = /usr/lib/python3/dist-packages
+export DH_VIRTUALENV_ARGUMENTS := --python python3
+export DH_REQUIREMENTS_FILE := debian-requirements.txt
+
+%:
+	dh $@ --buildsystem dh_virtualenv
+
+override_dh_clean:
+	dh_clean
+	rm -rf build dist MANIFEST
+
+override_dh_install:
+	dh_install
+	rm debian/sylk-pushserver/usr/lib/python3/dist-packages/sylk-pushserver/lib/python3.7/site-packages/setuptools/*exe
+	py3clean .
+
+
+override_dh_installsystemd:
+	dh_installsystemd -psylk-pushserver --name=sylk-pushserver --no-start

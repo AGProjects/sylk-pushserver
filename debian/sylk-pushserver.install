@@ -1,0 +1,3 @@
+config/*.ini.sample etc/sylk-pushserver/
+config/applications/*.py /etc/sylk-pushserver/applications/
+config/pns/*.py /etc/sylk-pushserver/pns/

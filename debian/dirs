@@ -1,0 +1,6 @@
+/etc/sylk-pushserver/
+/etc/sylk-pushserver/applications
+/etc/sylk-pushserver/pns
+/etc/sylk-pushserver/credentials
+/usr/lib
+/var/log/sylk-pushserver

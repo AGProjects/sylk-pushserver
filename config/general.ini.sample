@@ -1,0 +1,47 @@
+; The values after the ; are the default values, uncomment them only if you
+; want to make changes
+
+[server]
+; host = 0.0.0.0
+; port = 8400
+
+; The file containing X.509 certificate and private key in unencrypted format
+; If a certificate is set, the server will listen using TLS
+; tls_certificate = ''
+
+; by default the server will respond to the client after the outgoing
+; request for the push notification is completed.  If false, the server will
+; reply imediately with 202.  The result of the push notification can then
+; be found only in the logs.  This is designed for client that can block and
+; cannot or do not want to wait for the push operation to be completed
+; return_async = true
+
+; by default any client is allowed to send requests to the server
+; IP addresses and networks in CIDR notation are supported
+; e.g: 10.10.10.0/24, 127.0.0.1, 192.168.1.2
+; allowed_hosts = [] 
+
+; by default logs go to the journal; uncomment below to also log to a file
+; log_file = /var/log/sylk-pushserver/push.log
+
+; If debug is true, headers and payloads for the outgoing requests will also
+; be logged
+; debug = False
+
+[applications]
+; paths are relative to the config directory, by default /etc/sylk-pushserver
+; and if missing ./config from the curent directory
+
+; mobile applications are configured in this file 
+; config_file = applications.ini
+
+; credentials relative paths are relative to this directory
+; credentials_folder = credentials
+
+; more applications can be added to this directory
+; extra_applications_dir = applications/
+
+; more pns can be added to this directory
+; extra_pns_dir = pns/
+
+
