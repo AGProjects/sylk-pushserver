@@ -87,6 +87,9 @@ class AppleHeaders(object):
             'apns-topic': self.apns_topic,
             'authorization': f"bearer {self.token}"}
 
+        if self.apns_push_type == 'background':
+            headers['content-available'] = '1'
+
         return headers
 
 
