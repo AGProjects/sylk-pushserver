@@ -307,15 +307,20 @@ class FirebasePushRequest(PushRequest):
         # Expected OAuth 2 access token, login cookie or other valid authentication
         # credential. UNAUTHENTICATED
         if code == 401 and reason == 'Unauthorized':
-            if not self.pns.get('refreshed_token'):
-                level = 'warn'
-                msg = f"outgoing {self.platform.title()} response for request " \
-                      f"{self.request_id} need a new access token - " \
-                      f"server will refresh it and try again"
-                log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
-                # retry with a new Fireplace access token
-                self.pns['refreshed_token'] = True
-                self.pns.access_token = self.pns.set_access_token()
-                self.results = self.send_notification()
+            try:
+                if not self.pns.get('refreshed_token'):
+                    level = 'warn'
+                    msg = f"outgoing {self.platform.title()} response for request " \
+                          f"{self.request_id} need a new access token - " \
+                          f"server will refresh it and try again"
+                    log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
+                    # retry with a new Fireplace access token
+                    self.pns.access_token = self.pns.set_access_token()
+                    self.pns['refreshed_token'] = True
+                    self.results = self.send_notification()
+                return results
 
-        return results
+            except Exception as exc:
+                level = 'error'
+                msg = f"Filed trying to refresh access token: {exc}"
+                log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
