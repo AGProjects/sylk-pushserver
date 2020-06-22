@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from datetime import datetime
 
 import oauth2client
 import requests
@@ -140,6 +141,7 @@ class FirebaseRegister(PlatformRegister):
 
         return {'pns': self.pns,
                 'access_token': self.pns.access_token,
+                'last_token_update': datetime.now(),
                 'auth_key': self.auth_key,
                 'auth_file': self.auth_file}
 
@@ -306,21 +308,21 @@ class FirebasePushRequest(PushRequest):
         # Request is missing required authentication credential.
         # Expected OAuth 2 access token, login cookie or other valid authentication
         # credential. UNAUTHENTICATED
-        if code == 401 and reason == 'Unauthorized':
-            try:
-                if not self.pns.get('refreshed_token'):
-                    level = 'warn'
-                    msg = f"outgoing {self.platform.title()} response for request " \
-                          f"{self.request_id} need a new access token - " \
-                          f"server will refresh it and try again"
-                    log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
-                    # retry with a new Fireplace access token
-                    self.pns.access_token = self.pns.set_access_token()
-                    self.pns['refreshed_token'] = True
-                    self.results = self.send_notification()
-                return results
+        code = results.get('code')
+        reason = results.get('reason')
 
-            except Exception as exc:
-                level = 'error'
-                msg = f"Filed trying to refresh access token: {exc}"
+        if code == 401 and reason == 'Unauthorized':
+            last_update_token = self.pns.get('last_update_token')
+            delta = datetime.now() - last_update_token
+            if delta.total_seconds() > 300:  # 5 min
+                level = 'warn'
+                msg = f"outgoing {self.platform.title()} response for request " \
+                      f"{self.request_id} need a new access token - " \
+                      f"server will refresh it and try again"
                 log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
+                # retry with a new Fireplace access token
+                self.pns['refreshed_token'] = True
+                self.pns.access_token = self.pns.set_access_token()
+                self.results = self.send_notification()
+
+        return results
