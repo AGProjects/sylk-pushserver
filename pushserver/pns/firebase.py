@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from datetime import datetime
 
 import oauth2client
 import requests
@@ -140,6 +141,7 @@ class FirebaseRegister(PlatformRegister):
 
         return {'pns': self.pns,
                 'access_token': self.pns.access_token,
+                'last_token_update': datetime.now(),
                 'auth_key': self.auth_key,
                 'auth_file': self.auth_file,
                 'refreshed_token': False}
@@ -307,6 +309,9 @@ class FirebasePushRequest(PushRequest):
         # Request is missing required authentication credential.
         # Expected OAuth 2 access token, login cookie or other valid authentication
         # credential. UNAUTHENTICATED
+        code = results.get('code')
+        reason = results.get('reason')
+
         if code == 401 and reason == 'Unauthorized':
             if not self.pns.get('refreshed_token'):
                 level = 'warn'
@@ -314,3 +319,9 @@ class FirebasePushRequest(PushRequest):
                       f"{self.request_id} need a new access token - " \
                       f"server will refresh it and try again"
                 log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
+                # retry with a new Fireplace access token
+                self.pns['refreshed_token'] = True
+                self.pns.access_token = self.pns.set_access_token()
+                self.results = self.send_notification()
+
+        return results
