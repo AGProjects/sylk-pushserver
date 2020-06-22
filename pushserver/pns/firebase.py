@@ -37,7 +37,9 @@ class FirebasePNS(PNS):
         self.auth_key = auth_key
         self.auth_file = auth_file
         self.error = ''
+        self.last_update_token = None
         self.access_token = self.set_access_token()
+
 
     def set_access_token(self) -> str:
         """
@@ -62,6 +64,7 @@ class FirebasePNS(PNS):
             oauth2client.client.logger.setLevel('CRITICAL')
             access_token_info = credentials.get_access_token()
 
+            self.last_update_token = datetime.now()
             return access_token_info.access_token
         except Exception as e:
             self.error = f"Error: cannot generated Firebase access token: {e}"
@@ -141,7 +144,6 @@ class FirebaseRegister(PlatformRegister):
 
         return {'pns': self.pns,
                 'access_token': self.pns.access_token,
-                'last_token_update': datetime.now(),
                 'auth_key': self.auth_key,
                 'auth_file': self.auth_file}
 
@@ -178,6 +180,7 @@ class FirebasePushRequest(PushRequest):
         self.log_remote = log_remote
 
         self.pns = register['pns']
+
         self.path = self.pns.url_push
         self.results = self.send_notification()
 
@@ -310,10 +313,9 @@ class FirebasePushRequest(PushRequest):
         # credential. UNAUTHENTICATED
         code = results.get('code')
         reason = results.get('reason')
-
+        delta = datetime.now() - self.pns.last_update_token
         if code == 401 and reason == 'Unauthorized':
-            last_update_token = self.pns.get('last_update_token')
-            delta = datetime.now() - last_update_token
+            delta = datetime.now() - self.pns.last_update_token
             if delta.total_seconds() > 300:  # 5 min
                 level = 'warn'
                 msg = f"outgoing {self.platform.title()} response for request " \
@@ -321,7 +323,6 @@ class FirebasePushRequest(PushRequest):
                       f"server will refresh it and try again"
                 log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
                 # retry with a new Fireplace access token
-                self.pns['refreshed_token'] = True
                 self.pns.access_token = self.pns.set_access_token()
                 self.results = self.send_notification()
 
