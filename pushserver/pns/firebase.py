@@ -40,7 +40,6 @@ class FirebasePNS(PNS):
         self.last_update_token = None
         self.access_token = self.set_access_token()
 
-
     def set_access_token(self) -> str:
         """
         Retrieve a valid access token that can be used to authorize requests.
@@ -313,7 +312,6 @@ class FirebasePushRequest(PushRequest):
         # credential. UNAUTHENTICATED
         code = results.get('code')
         reason = results.get('reason')
-        delta = datetime.now() - self.pns.last_update_token
         if code == 401 and reason == 'Unauthorized':
             delta = datetime.now() - self.pns.last_update_token
             if delta.total_seconds() > 300:  # 5 min
@@ -324,6 +322,12 @@ class FirebasePushRequest(PushRequest):
                 log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
                 # retry with a new Fireplace access token
                 self.pns.access_token = self.pns.set_access_token()
+                level = 'warn'
+                msg = f"outgoing {self.platform.title()} response for request " \
+                      f"{self.request_id} a new access token was generated - " \
+                      f"trying again"
+                log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
+
                 self.results = self.send_notification()
 
         return results
