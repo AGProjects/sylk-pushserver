@@ -22,17 +22,10 @@ def callid_to_uuid(call_id: str) -> str:
     four-character strings, then 12 characters at the end.
     These segments are separated by a “-”.
 
-    CallId string is concatenated with datetime str,
-    to add a pseudo random factor.
-
-    :param call_id: `str` Globaly unique identifier of a call.
+    :param call_id: `str` Globally unique identifier of a call.
     :return: a str with a uuidv4.
     """
-    d = datetime.now()
-    today = d.strftime("%Y%m%d%H%S%f")
-
-    to_hash = f"{call_id}{today}"
-    hexa = hashlib.md5(to_hash.encode()).hexdigest()
+    hexa = hashlib.md5(call_id.encode()).hexdigest()
 
     uuidv4 = '%s-%s-%s-%s-%s' % \
              (hexa[:8], hexa[8:12], hexa[12:16], hexa[16:20], hexa[20:])
