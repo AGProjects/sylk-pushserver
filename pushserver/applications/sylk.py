@@ -20,7 +20,7 @@ class AppleSylkHeaders(AppleHeaders):
         'alert', 'background', 'voip',
         'complication', 'fileprovider' or 'mdm'.
         """
-        push_type = 'voip' if self.event == 'incoming_session' else 'background'
+        push_type = 'voip' if self.event in ('incoming_session', 'incoming_conference_request') else 'background'
 
         return push_type
 
@@ -43,7 +43,7 @@ class AppleSylkHeaders(AppleHeaders):
         if self.app_id.endswith('.dev') or self.app_id.endswith('.prod'):
             apns_topic = '.'.join(self.app_id.split('.')[:-1])
 
-        if self.event == 'incoming_session':
+        if self.event in ('incoming_session', 'incoming_conference_request'):
             apns_topic = f"{apns_topic}.voip"
 
         return apns_topic
@@ -56,7 +56,7 @@ class AppleSylkHeaders(AppleHeaders):
         5 to send the notification based on power considerations
         on the user’s device.
         """
-        apns_priority = '10' if self.event == 'incoming_session' else '5'
+        apns_priority = '10' if self.event in ('incoming_session', 'incoming_conference_request') else '5'
 
         return apns_priority
 
