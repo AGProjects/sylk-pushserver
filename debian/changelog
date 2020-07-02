@@ -1,3 +1,11 @@
+sylk-pushserver (1.0.2) unstable; urgency=medium
+
+  * Firebase token fixes
+  * Fix converting call-id to uuidv4 for sylk app
+  * Switch Sylk conference invite push type to VoIP
+
+ -- Adrian Georgescu <ag@ag-projects.com>  Wed, 01 Jul 2020 19:10:44 +0200
+
 sylk-pushserver (1.0.1) unstable; urgency=medium
 
   * Added software sources location
