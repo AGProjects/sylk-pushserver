@@ -290,6 +290,16 @@ class FirebasePushRequest(PushRequest):
 
         if isinstance(body, str):
             body = json.loads(body)
+        
+        if code == 200:
+            try:
+                failure = body['data']['body']['_content']['failure']
+            except KeyError:
+                pass
+            else:
+                if failure == 1:
+                    reason = body['data']['body']['_content']['results'][0]['error']
+                    code = 410
 
         keys = list(body.keys())
         for key in keys:
