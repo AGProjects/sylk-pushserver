@@ -1,3 +1,9 @@
+sylk-pushserver (1.0.3) unstable; urgency=medium
+
+  * Detect firebase expired token based on 404 code
+
+ -- Adrian Georgescu <ag@ag-projects.com>  Mon, 17 Aug 2020 13:08:10 +0200
+
 sylk-pushserver (1.0.2) unstable; urgency=medium
 
   * Firebase token fixes
