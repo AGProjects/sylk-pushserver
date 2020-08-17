@@ -301,6 +301,14 @@ class FirebasePushRequest(PushRequest):
                 if failure == 1:
                     reason = body['data']['body']['_content']['results'][0]['error']
                     code = 410
+        elif code == 404:
+            try:
+                payload_code = body['data']['body']['_content']['error']['code'] 
+            except KeyError:
+                pass
+            else:
+                if payload_code == 404:
+                    code = 410
 
         keys = list(body.keys())
         for key in keys:
