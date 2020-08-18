@@ -332,7 +332,8 @@ class FirebasePushRequest(PushRequest):
         reason = results.get('reason')
         if code == 401 and reason == 'Unauthorized':
             delta = datetime.now() - self.pns.last_update_token
-            if delta.total_seconds() > 300:  # 5 min
+            #if delta.total_seconds() > 300:  # 5 min
+            if True:
                 level = 'warn'
                 msg = f"outgoing {self.platform.title()} response for request " \
                       f"{self.request_id} need a new access token - " \
