@@ -137,10 +137,9 @@ class PushRequest(object):
         results = []
 
         for log_url in self.log_remote['log_urls']:
-            msg = f'{task} request {self.request_id} to {log_url}'
-            log_event(loggers=self.loggers, msg=msg, level='info')
-
             if self.loggers['debug']:
+                msg = f'{task} request {self.request_id} to {log_url}'
+                log_event(loggers=self.loggers, msg=msg, level='info')
                 msg = f'{task} request {self.request_id} to {log_url} headers: {headers}'
                 log_event(loggers=self.loggers, msg=msg, level='info', to_file=True)
                 msg = f'{task} request {self.request_id} to {log_url} body: {payload}'
@@ -163,13 +162,15 @@ class PushRequest(object):
                 for f in futures
             ]
         except requests.exceptions.ConnectionError as exc:
-            msg = f'{task} for {self.request_id}: connection error {exc}'
-            log_event(loggers=self.loggers, msg=msg, level='error')
-            log_event(loggers=self.loggers, msg=msg, level='error', to_file=True)
+            if self.loggers['debug']:
+                msg = f'{task} for {self.request_id}: connection error {exc}'
+                log_event(loggers=self.loggers, msg=msg, level='error')
+                log_event(loggers=self.loggers, msg=msg, level='error', to_file=True)
         except requests.exceptions.ReadTimeout as exc:
-            msg = f'{task} for {self.request_id}: connection error {exc}'
-            log_event(loggers=self.loggers, msg=msg, level='error')
-            log_event(loggers=self.loggers, msg=msg, level='error', to_file=True)
+            if self.loggers['debug']:
+                msg = f'{task} for {self.request_id}: connection error {exc}'
+                log_event(loggers=self.loggers, msg=msg, level='error')
+                log_event(loggers=self.loggers, msg=msg, level='error', to_file=True)
 
         if not results:
             return
@@ -186,29 +187,29 @@ class PushRequest(object):
                     value = {}
 
                 if value:
-                    msg = f'{task} response for request {self.request_id} from {url} - ' \
-                          f'{code} {log_key}: {value}'
-                    log_event(loggers=self.loggers, msg=msg, level='info')
 
                     if self.loggers['debug']:
+                        msg = f'{task} response for request {self.request_id} from {url} - ' \
+                              f'{code} {log_key}: {value}'
+                        log_event(loggers=self.loggers, msg=msg, level='info')
                         log_event(loggers=self.loggers, msg=msg, level='info', to_file=True)
 
                 else:
-                    msg = f'{task} response for request {self.request_id} - ' \
-                          f'code: {code}, key not found'
-                    log_event(loggers=self.loggers, msg=msg, level='error')
-
                     if self.loggers['debug']:
+                        msg = f'{task} response for request {self.request_id} - ' \
+                              f'code: {code}, key not found'
+                        log_event(loggers=self.loggers, msg=msg, level='error')
+
                         msg = f'{task} response for request {self.request_id} - ' \
                               f'{log_key} key not found in: {text}'
                         log_event(loggers=self.loggers, msg=msg, level='error', to_file=True)
 
             else:
-                msg = f'{task} code response for request {self.request_id} ' \
-                      f'from {url}: {code}'
-                log_event(loggers=self.loggers, msg=msg, level='info')
 
                 if self.loggers['debug']:
+                    msg = f'{task} code response for request {self.request_id} ' \
+                          f'from {url}: {code}'
+                    log_event(loggers=self.loggers, msg=msg, level='info')
                     msg = f'{task} response for request {self.request_id} ' \
                           f'from {url}: {code} {text}'
                     log_event(loggers=self.loggers, msg=msg, level='info', to_file=True)

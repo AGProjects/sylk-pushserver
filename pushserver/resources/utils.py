@@ -173,7 +173,7 @@ def log_event(loggers: dict, msg: str, level: str = 'deb',
         logger.setLevel(logging.WARNING)
         logger.warning(msg)
 
-    elif level == 'deb':
+    elif level in ('deb', 'debug'):
         logger.setLevel(logging.DEBUG)
         logger.debug(msg)
 
@@ -240,7 +240,7 @@ def log_incoming_request(task: str, host: str, loggers: dict,
                 item = item.replace('_', '-')
             payload[item] = value
 
-        level = 'deb'
+        level = 'info'
         if sip_to:
             if device_id:
                 msg = f'incoming {platform.title()} request {request_id}: ' \
@@ -263,9 +263,6 @@ def log_incoming_request(task: str, host: str, loggers: dict,
         msg = f'incoming {platform.title()} response for {request_id}: ' \
               f'push accepted'
         level = 'info'
-        log_event(msg=msg, level=level, loggers=loggers)
-
-        level = 'deb'
         log_event(msg=msg, level=level, loggers=loggers, to_file=True)
 
     elif task == 'log_failure':
@@ -273,5 +270,4 @@ def log_incoming_request(task: str, host: str, loggers: dict,
         resp = error_msg
         msg = f'incoming {platform.title()} from {host} response for {request_id}, ' \
               f'push rejected: {resp}'
-        log_event(msg=msg, level=level, loggers=loggers)
         log_event(loggers=loggers, msg=msg, level=level, to_file=True)
