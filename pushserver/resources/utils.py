@@ -150,7 +150,7 @@ def log_event(loggers: dict, msg: str, level: str = 'deb',
     :param level: `str` info, error, deb or warn
     :param to_file: `bool` write just in file if True
     """
-
+    
     if loggers.get('to_file'):
         logger = loggers.get('to_file')
     else:

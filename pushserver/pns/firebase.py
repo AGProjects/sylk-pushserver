@@ -219,7 +219,7 @@ class FirebasePushRequest(PushRequest):
         session.mount('https://', adapter)
         return session
 
-    def send_notification(self) -> dict:
+    def send_notification(self, got401=False) -> dict:
         """
         Send a Firebase push notification
         """
@@ -331,7 +331,7 @@ class FirebasePushRequest(PushRequest):
         # credential. UNAUTHENTICATED
         code = results.get('code')
         reason = results.get('reason')
-        if code == 401 and reason == 'Unauthorized':
+        if not got401 and code == 401 and reason == 'Unauthorized':
             if not self.pns.get('refreshed_token'):
                 level = 'warn'
                 msg = f"outgoing {self.platform.title()} response for request " \
