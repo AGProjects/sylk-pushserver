@@ -3,7 +3,7 @@ if [ -f dist ]; then
     rm -r dist
 fi
 
-python setup.py sdist
+python3 setup.py sdist
 sleep 2
 
 cd dist
@@ -13,7 +13,7 @@ cd sylk_pushserver-?.?.?
 ls
 sleep 3
 
-debuild
+debuild --no-sign
 
 cd dist
 ls
