@@ -45,21 +45,17 @@ class FirebasePNS(PNS):
         Retrieve a valid access token that can be used to authorize requests.
         :return: `str` Access token.
         """
+        
+        #https://github.com/firebase/quickstart-python/blob/909f39e77395cb0682108184ba565150caa68a31/messaging/messaging.py#L25-L33
 
-        if not self.auth_file:
-            self.error = f"Cannot generated Firebase access token, " \
-                         f"no auth file provided"
-            return ''
-
-        if not os.path.exists(self.auth_file):
-            self.error = f"Cannot generated Firebase access token, " \
+        if not self.auth_file or not os.path.exists(self.auth_file):
+            self.error = f"Cannot generate Firebase access token, " \
                   f"auth file {self.auth_file} not found"
             return ''
 
         scopes = ['https://www.googleapis.com/auth/firebase.messaging']
         try:
-            credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file,
-                                                                           scopes)
+            credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scopes)
             oauth2client.client.logger.setLevel('CRITICAL')
             access_token_info = credentials.get_access_token()
 

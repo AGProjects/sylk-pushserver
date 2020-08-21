@@ -133,7 +133,7 @@ links may change:
 
  * [Sending Apple VoIp notifications](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns)
  * [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging)
-
+ * [FCM migration from legacy HTTP to HTTP v1](https://firebase.google.com/docs/cloud-messaging/migrate-v1)
 
 ## Installation
 
