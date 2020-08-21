@@ -1,3 +1,10 @@
+sylk-pushserver (1.0.4) unstable; urgency=medium
+
+  * Always retry imediately with new token if Firebase returned 401
+  * Remove duplicate logging
+
+ -- Adrian Georgescu <agp@test-thor-node.sipthor.net>  Tue, 18 Aug 2020 14:29:05 +0200
+
 sylk-pushserver (1.0.3) unstable; urgency=medium
 
   * Detect firebase expired token based on 404 code
