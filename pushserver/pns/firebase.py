@@ -218,7 +218,7 @@ class FirebasePushRequest(PushRequest):
         session.mount('https://', adapter)
         return session
 
-    def send_notification(self) -> dict:
+    def send_notification(self, got401=False) -> dict:
         """
         Send a Firebase push notification
         """
@@ -330,23 +330,21 @@ class FirebasePushRequest(PushRequest):
         # credential. UNAUTHENTICATED
         code = results.get('code')
         reason = results.get('reason')
-        if code == 401 and reason == 'Unauthorized':
+        if not got401 and code == 401 and reason == 'Unauthorized':
             delta = datetime.now() - self.pns.last_update_token
-            #if delta.total_seconds() > 300:  # 5 min
-            if True:
-                level = 'warn'
-                msg = f"outgoing {self.platform.title()} response for request " \
-                      f"{self.request_id} need a new access token - " \
-                      f"server will refresh it and try again"
-                log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
-                # retry with a new Fireplace access token
-                self.pns.access_token = self.pns.set_access_token()
-                level = 'warn'
-                msg = f"outgoing {self.platform.title()} response for request " \
-                      f"{self.request_id} a new access token was generated - " \
-                      f"trying again"
-                log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
+            level = 'warn'
+            msg = f"outgoing {self.platform.title()} response for request " \
+                  f"{self.request_id} need a new access token - " \
+                  f"server will refresh it and try again"
+            log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
+            # retry with a new Fireplace access token
+            self.pns.access_token = self.pns.set_access_token()
+            level = 'warn'
+            msg = f"outgoing {self.platform.title()} response for request " \
+                  f"{self.request_id} a new access token {self.pns.access_token} was generated - " \
+                  f"trying again"
+            log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
 
-                self.results = self.send_notification()
+            self.results = self.send_notification(got401=True)
 
         return results
