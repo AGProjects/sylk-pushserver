@@ -51,6 +51,7 @@ class WakeUpRequest(BaseModel):
     sip_to: str                    # SIP URI for who is called
     media_type: str = None         # 'audio', 'video', 'chat', 'sms' or 'file-transfer'
     silent: bool = True            # True for silent notification
+    reason: str = None             # Cancel reason
 
     class Config:
         alias_generator = alias_rename

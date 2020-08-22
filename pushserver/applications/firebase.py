@@ -8,7 +8,7 @@ __all__ = ['FirebaseHeaders', 'FirebasePayload']
 class FirebaseHeaders(object):
     def __init__(self, app_id: str, event: str, token: str,
                  call_id: str, sip_from: str, from_display_name: str,
-                 sip_to: str, media_type: str, silent: bool):
+                 sip_to: str, media_type: str, silent: bool, reason: str):
         """
         :param app_id: `str` id provided by the mobile application (bundle id)
         :param event: `str` 'incoming_session', 'incoming_conference' or 'cancel'
@@ -30,6 +30,7 @@ class FirebaseHeaders(object):
         self.media_type = media_type
         self.silent = silent
         self.event = event
+        self.reason = reason
         self.access_token = ''
 
         self.auth_key = \
@@ -60,7 +61,7 @@ class FirebaseHeaders(object):
 class FirebasePayload(object):
     def __init__(self, app_id: str, event: str, token: str,
                  call_id: str, sip_from: str, from_display_name: str,
-                 sip_to: str, media_type: str, silent: bool):
+                 sip_to: str, media_type: str, silent: bool, reason: str):
         """
         :param token: `str` destination device token (required for sylk-apple)
         :param call_id: `str` unique SIP session id for each call
@@ -79,6 +80,7 @@ class FirebasePayload(object):
         self.from_display_name = from_display_name
         self.sip_to = sip_to
         self.silent = silent
+        self.reason = reason
 
     @property
     def payload(self) -> dict:

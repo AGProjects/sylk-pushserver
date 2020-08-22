@@ -8,7 +8,7 @@ class AppleHeaders(object):
 
     def __init__(self, app_id: str, event: str, token: str,
                  call_id: str, sip_from: str,  from_display_name: str,
-                 sip_to: str, media_type: str, silent: bool):
+                 sip_to: str, media_type: str, silent: bool, reason: str):
         """
         :param app_id: `str` id provided by the mobile application (bundle id)
         :param event: `str` 'incoming_session', 'incoming_conference' or 'cancel'
@@ -19,6 +19,7 @@ class AppleHeaders(object):
         :param sip_to: `str` SIP URI for who is called
         :param media_type: `str` 'audio', 'video', 'chat', 'sms' or 'file-transfer'
         :param silent: `bool` True for silent notification
+        :param reason: `str` Cancel reason
         """
 
         self.app_id = app_id
@@ -30,6 +31,7 @@ class AppleHeaders(object):
         self.media_type = media_type
         self.silent = silent
         self.event = event
+        self.reason = reason
 
         self.apns_push_type = self.create_push_type()
         self.apns_expiration = self.create_expiration()
@@ -100,7 +102,7 @@ class ApplePayload(object):
 
     def __init__(self, app_id: str, event: str, token: str,
                  call_id: str, sip_from: str,  from_display_name: str,
-                 sip_to: str, media_type, silent: bool):
+                 sip_to: str, media_type, silent: bool, reason: str):
         """
         :param app_id: `str` id provided by the mobile application (bundle id)
         :param event: `str` 'incoming_session', 'incoming_conference' or 'cancel'
@@ -111,6 +113,7 @@ class ApplePayload(object):
         :param sip_to: `str` SIP URI for who is called
         :param media_type: `str` 'audio', 'video', 'chat', 'sms' or 'file-transfer'
         :param silent: `bool` True for silent notification
+        :param reason: `str` Cancel reason
         """
         self.app_id = app_id
         self.token = token
@@ -121,6 +124,7 @@ class ApplePayload(object):
         self.media_type = media_type
         self.silent = silent
         self.event = event
+        self.reason = reason
 
     @property
     def payload(self) -> dict:
