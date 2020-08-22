@@ -83,6 +83,7 @@ class AppleSylkPayload(ApplePayload):
                 'event': self.event,
                 'call-id': self.call_id,
                 'session-id': callid_to_uuid(self.call_id),
+                'reason': self.reason
             }
         else:
             payload = {
@@ -119,6 +120,7 @@ class FirebaseSylkPayload(FirebasePayload):
                 'event': self.event,
                 'call-id': self.call_id,
                 'session-id': callid_to_uuid(self.call_id),
+                'reason': self.reason
             }
         else:
             data = {

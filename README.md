@@ -86,6 +86,7 @@ Json object structure:
 'media-type':'audio', 
 'event': 'incoming_session'
 'silent': True
+'reason': None
 }
 ```
 
@@ -103,6 +104,7 @@ Where:
 * `to`,  address of the callee 
 * `media-type: str`:  'audio', 'video', 'chat', 'sms' or 'file-transfer' 
 * `silent: bool`: *(optional, default `True`)* True for silent notification 
+* `reason:str`: *(optional)* Cancel reason
 * `event: str`,  type of event:
     * For *Sylk app*  must be 'incoming_session', 'incoming_conference' or 'cancel'
     * For *Linphone app*  must be 'incoming_session'
