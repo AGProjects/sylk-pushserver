@@ -1,9 +1,16 @@
+sylk-pushserver (1.0.5) unstable; urgency=medium
+
+  * Added cancel reason
+  * Always refresh Firebase access token before sending
+
+ -- Adrian Georgescu <ag@ag-projects.com>  Sat, 22 Aug 2020 15:52:04 +0200
+
 sylk-pushserver (1.0.4) unstable; urgency=medium
 
-  * Always retry imediately with new token if Firebase returned 401
+  * Always retry immediately with new token if Firebase returned 401
   * Remove duplicate logging
 
- -- Adrian Georgescu <agp@test-thor-node.sipthor.net>  Tue, 18 Aug 2020 14:29:05 +0200
+ -- Adrian Georgescu <ag@ag-projects.com>  Tue, 18 Aug 2020 14:29:05 +0200
 
 sylk-pushserver (1.0.3) unstable; urgency=medium
 
