@@ -14,6 +14,11 @@ from urllib3 import Retry
 from pushserver.pns.base import PNS, PushRequest, PlatformRegister
 from pushserver.resources.utils import log_event, fix_non_serializable_types
 
+import firebase_admin
+from firebase_admin import messaging
+
+default_app = firebase_admin.initialize_app()
+
 
 class FirebasePNS(PNS):
     """
@@ -147,7 +152,8 @@ class FirebasePushRequest(PushRequest):
         self.pns = register['pns']
 
         self.path = self.pns.url_push
-        self.results = self.send_notification()
+        self.results = self.send_http_notification()
+        # self.results = self.send_fcm_notification()
 
     def requests_retry_session(self, counter=0):
         """
@@ -184,9 +190,9 @@ class FirebasePushRequest(PushRequest):
         session.mount('https://', adapter)
         return session
 
-    def send_notification(self) -> dict:
+    def send_http_notification(self) -> dict:
         """
-        Send a Firebase push notification
+        Send a Firebase push notification over HTTP
         """
 
         if self.error:
@@ -205,9 +211,8 @@ class FirebasePushRequest(PushRequest):
         while counter <= n_retries:
             self.log_request(path=self.pns.url_push)
             try:
-
                 response = requests.post(self.pns.url_push,
-                                         self.payload,
+                                         self.payload['http'],
                                          headers=self.headers)
                 break
             except requests.exceptions.RequestException as e:
@@ -278,6 +283,67 @@ class FirebasePushRequest(PushRequest):
             if not body[key]:
                 del body[key]
 
+        results = {'body': body,
+                   'code': code,
+                   'reason': reason,
+                   'url': self.pns.url_push,
+                   'call_id': self.wp_request.call_id,
+                   'token': self.token
+                   }
+
+        self.results = results
+        self.log_results()
+        return results
+
+    def send_fcm_notification(self) -> dict:
+        """
+        Send a native Firebase push notification
+        """
+
+        if self.error:
+            self.log_error()
+            return {'code': 500, 'body': {}, 'reason': 'Internal server error'}
+
+        n_retries, backoff_factor = self.retries_params(self.wp_request.media_type)
+
+        counter = 0
+        error = False
+        code = 200
+        response = None
+        body = None
+        reason = None
+        
+        while counter <= n_retries:
+            self.log_request(path=self.pns.url_push)
+
+            try:
+                response = messaging.send(self.payload['fcm'])
+                break
+            except Exception as e:
+                error = True
+                response = f'connection failed: {e}'
+                counter += 1
+                timer = backoff_factor * (2 ** (counter - 1))
+                conde = 500
+                time.sleep(timer)
+
+        if counter == n_retries:
+            reason = "maximum retries reached"
+
+        elif error:
+            try:
+                response = self.requests_retry_session(counter). \
+                    post(self.pns.url_push,
+                         self.payload,
+                         headers=self.headers)
+            except Exception as x:
+                level = 'error'
+                msg = f"outgoing {self.platform.title()} response for " \
+                      f"{self.request_id}, push failed: " \
+                      f"an error occurred in {x.__class__.__name__}"
+                log_event(loggers=self.loggers, msg=msg, level=level)
+
+        body = {'response': response}
         results = {'body': body,
                    'code': code,
                    'reason': reason,
