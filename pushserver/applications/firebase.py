@@ -1,6 +1,7 @@
 import json
 
 from pushserver.resources import settings
+from oauth2client.service_account import ServiceAccountCredentials
 
 __all__ = ['FirebaseHeaders', 'FirebasePayload']
 
@@ -31,14 +32,34 @@ class FirebaseHeaders(object):
         self.silent = silent
         self.event = event
         self.reason = reason
-        self.access_token = ''
+        
+        try:
+            self.auth_key = settings.params.pns_register[(self.app_id, 'firebase')]['auth_key']
+        except KeyError:
+            self.auth_key = None
+            
+        try:
+            self.auth_file = settings.params.pns_register[(self.app_id, 'firebase')]['auth_file']
+        except KeyError:
+            self.auth_file = None
 
-        self.auth_key = \
-            settings.params.pns_register[(self.app_id, 'firebase')]['auth_key']
-        if not self.auth_key:
-            pns_dict = settings.params.pns_register[(self.app_id, 'firebase')]['pns'].__dict__
-            self.access_token = pns_dict['access_token']
+    @property
+    def access_token(self) -> str:
+        #https://github.com/firebase/quickstart-python/blob/909f39e77395cb0682108184ba565150caa68a31/messaging/messaging.py#L25-L33
 
+        """
+        Retrieve a valid access token that can be used to authorize requests.
+        :return: `str` Access token.
+        """
+        scopes = ['https://www.googleapis.com/auth/firebase.messaging']
+        try:
+            credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scopes)
+            access_token_info = credentials.get_access_token()
+            return access_token_info.access_token
+        except Exception as e:
+            self.error = f"Error: cannot generated Firebase access token: {e}"
+            return ''
+            
     @property
     def headers(self):
         """

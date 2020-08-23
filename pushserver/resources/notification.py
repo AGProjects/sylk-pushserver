@@ -15,8 +15,7 @@ def handle_request(wp_request, request_id: str) -> dict:
     :param request_id: `str`, request ID generated on request event.
     :return: a `dict` with push notification results
     """
-    push_notification = PushNotification(wp_request=wp_request,
-                                         request_id=request_id)
+    push_notification = PushNotification(wp_request=wp_request, request_id=request_id)
     results = push_notification.send_notification()
     return results
 

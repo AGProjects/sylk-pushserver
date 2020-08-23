@@ -5,7 +5,6 @@ from datetime import datetime
 
 import oauth2client
 import requests
-from oauth2client.service_account import ServiceAccountCredentials
 
 from pushserver.models.requests import WakeUpRequest
 
@@ -37,34 +36,7 @@ class FirebasePNS(PNS):
         self.auth_key = auth_key
         self.auth_file = auth_file
         self.error = ''
-        self.last_update_token = None
-        self.access_token = self.set_access_token()
-
-    def set_access_token(self) -> str:
-        """
-        Retrieve a valid access token that can be used to authorize requests.
-        :return: `str` Access token.
-        """
-        
-        #https://github.com/firebase/quickstart-python/blob/909f39e77395cb0682108184ba565150caa68a31/messaging/messaging.py#L25-L33
-
-        if not self.auth_file or not os.path.exists(self.auth_file):
-            self.error = f"Cannot generate Firebase access token, " \
-                  f"auth file {self.auth_file} not found"
-            return ''
-
-        scopes = ['https://www.googleapis.com/auth/firebase.messaging']
-        try:
-            credentials = ServiceAccountCredentials.from_json_keyfile_name(self.auth_file, scopes)
-            oauth2client.client.logger.setLevel('CRITICAL')
-            access_token_info = credentials.get_access_token()
-
-            self.last_update_token = datetime.now()
-            return access_token_info.access_token
-        except Exception as e:
-            self.error = f"Error: cannot generated Firebase access token: {e}"
-            return ''
-
+    
 
 class FirebaseRegister(PlatformRegister):
     def __init__(self, app_id: str, app_name: str, voip: bool,
@@ -90,7 +62,6 @@ class FirebaseRegister(PlatformRegister):
             return None
 
     def set_auths(self):
-
         auth_key = None
         auth_file = None
         try:
@@ -138,7 +109,6 @@ class FirebaseRegister(PlatformRegister):
             return {}
 
         return {'pns': self.pns,
-                'access_token': self.pns.access_token,
                 'auth_key': self.auth_key,
                 'auth_file': self.auth_file,
                 'refreshed_token': False}
@@ -158,8 +128,8 @@ class FirebasePushRequest(PushRequest):
         :param error: `str`
         :param app_name: `str` 'linphone' or 'payload'
         :param app_id: `str` bundle id
-        :param headers: `AppleHeaders` Apple push notification headers
-        :param payload: `ApplePayload` Apple push notification payload
+        :param headers: `FirebaseHeaders` Firebase push notification headers
+        :param payload: `FirebasePayload`Firebase push notification payload
         :param wp_request: `WakeUpRequest`
         :param loggers: `dict` global logging instances to write messages (params.loggers)
         """
@@ -215,7 +185,7 @@ class FirebasePushRequest(PushRequest):
         session.mount('https://', adapter)
         return session
 
-    def send_notification(self, got401=False) -> dict:
+    def send_notification(self) -> dict:
         """
         Send a Firebase push notification
         """
@@ -232,11 +202,9 @@ class FirebasePushRequest(PushRequest):
         reason = ""
         body = None
         response = None
-
+        
         while counter <= n_retries:
-
             self.log_request(path=self.pns.url_push)
-
             try:
 
                 response = requests.post(self.pns.url_push,
