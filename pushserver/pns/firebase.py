@@ -212,7 +212,7 @@ class FirebasePushRequest(PushRequest):
             self.log_request(path=self.pns.url_push)
             try:
                 response = requests.post(self.pns.url_push,
-                                         self.payload['http'],
+                                         self.payload,
                                          headers=self.headers)
                 break
             except requests.exceptions.RequestException as e:
@@ -261,23 +261,44 @@ class FirebasePushRequest(PushRequest):
             body = json.loads(body)
         
         if code == 200:
+            description = 'OK'
             try:
                 failure = body['_content']['failure']
             except KeyError:
                 pass
             else:
                 if failure == 1:
-                    reason = body['_content']['results'][0]['error']
+                    description = body['_content']['results'][0]['error']
                     code = 410
-        elif code == 404:
+                    
+        else:
             try:
-                payload_code = body['_content']['error']['code'] 
+                reason = body['reason']
             except KeyError:
-                pass
-            else:
-                if payload_code == 404:
-                    code = 410
+                reason = None
+            
+            try:
+                details = body['_content']['error']['message']
+            except KeyError:
+                details = None
+               
+            try:
+                internal_code = body['_content']['error']['code']
+            except KeyError:
+                internal_code = None
+            
+            if internal_code == 400 and 'not a valid FCM registration token' in details:
+                code = 410
 
+            if reason and details:
+                description = "%s %s" % (reason, details)
+            elif reason:
+                description = reason
+            elif details:
+                error_description = details
+            else:
+                description = 'unknown failure reason'
+                
         keys = list(body.keys())
         for key in keys:
             if not body[key]:
@@ -285,8 +306,9 @@ class FirebasePushRequest(PushRequest):
 
         results = {'body': body,
                    'code': code,
-                   'reason': reason,
+                   'reason': description,
                    'url': self.pns.url_push,
+                   'platform': 'firebase',
                    'call_id': self.wp_request.call_id,
                    'token': self.token
                    }
@@ -348,6 +370,7 @@ class FirebasePushRequest(PushRequest):
                    'code': code,
                    'reason': reason,
                    'url': self.pns.url_push,
+                   'platform': 'firebase',
                    'call_id': self.wp_request.call_id,
                    'token': self.token
                    }

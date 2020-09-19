@@ -61,8 +61,15 @@ class PushNotification(object):
         headers = headers_class(*self.args).headers
 
         payload_class = self.pns_register[(self.app_id, self.platform)]['payload_class']
-        payload = payload_class(*self.args).payload
-        payload = json.dumps(payload)
+        try:
+            payload_dict = payload_class(*self.args).payload['http']
+        except KeyError:
+            payload_dict = payload_class(*self.args).payload
+            
+        try:      
+            payload = json.dumps(payload)
+        except Exception as e:
+            pass
 
         if not (headers and payload):
             error = f'{headers_class.__name__} and {payload_class.__name__} ' \
