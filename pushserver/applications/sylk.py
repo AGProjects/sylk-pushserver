@@ -156,4 +156,4 @@ class FirebaseSylkPayload(FirebasePayload):
                   )
         )
 
-        return {'http': http_payload, 'fcm': fcm_payload}
+        return http_payload
