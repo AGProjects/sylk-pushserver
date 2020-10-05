@@ -3,7 +3,7 @@ import datetime
 from pushserver.applications.apple import *
 from pushserver.applications.firebase import *
 from pushserver.resources.utils import callid_to_uuid
-from firebase_admin import messaging
+#from firebase_admin import messaging
 
 
 __all__ = ['AppleSylkHeaders', 'AppleSylkPayload',
@@ -147,13 +147,13 @@ class FirebaseSylkPayload(FirebasePayload):
                        }
                    }
 
-        fcm_payload = messaging.Message(
-                  token=self.token,
-                  data=data,
-                  android=messaging.AndroidConfig(
-                          ttl=datetime.timedelta(seconds=60),
-                          priority='high'
-                  )
-        )
+        #fcm_payload = messaging.Message(
+        #          token=self.token,
+        #          data=data,
+        #          android=messaging.AndroidConfig(
+        #                  ttl=datetime.timedelta(seconds=60),
+        #                  priority='high'
+        #          )
+        #)
 
         return http_payload

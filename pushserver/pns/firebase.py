@@ -14,10 +14,9 @@ from urllib3 import Retry
 from pushserver.pns.base import PNS, PushRequest, PlatformRegister
 from pushserver.resources.utils import log_event, fix_non_serializable_types
 
-import firebase_admin
-from firebase_admin import messaging
-
-default_app = firebase_admin.initialize_app()
+#import firebase_admin
+#from firebase_admin import messaging
+#default_app = firebase_admin.initialize_app()
 
 
 class FirebasePNS(PNS):
