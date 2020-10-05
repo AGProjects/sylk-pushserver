@@ -1,3 +1,10 @@
+sylk-pushserver (1.0.7) unstable; urgency=medium
+
+  * Purging firebasd token on 404
+  * Debian package fixes
+
+ -- Adrian Georgescu <agp@test-thor-node.sipthor.net>  Mon, 05 Oct 2020 16:41:57 +0200
+
 sylk-pushserver (1.0.6) unstable; urgency=medium
 
   * Fixed purging old tokens
