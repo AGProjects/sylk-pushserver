@@ -290,6 +290,8 @@ class FirebasePushRequest(PushRequest):
             
             if internal_code == 400 and 'not a valid FCM registration token' in details:
                 code = 410
+            elif internal_code == 404:
+                code = 410
 
             if reason and details:
                 description = "%s %s" % (reason, details)
