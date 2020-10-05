@@ -1,6 +1,6 @@
 """Package information"""
 
-__version__ = '1.0.5'
+__version__ = '1.0.6'
 __project__ = 'sylk_pushserver'
 __summary__ = 'Mobile push notifications for RTC infrastructures'
 __webpage__ = 'http://sylkserver.com'
