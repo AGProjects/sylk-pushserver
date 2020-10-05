@@ -15,5 +15,4 @@ sleep 3
 
 debuild --no-sign
 
-cd dist
 ls
