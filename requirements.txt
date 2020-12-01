@@ -7,3 +7,5 @@ requests >= 2.23.0
 systemd >= 0.16.1
 uvicorn ==  0.11.8
 #firebase-admin
+cassandra-driver == 3.24.0
+python3-application @ git+https://github.com/AGProjects/python3-application@6d96bef554473efd4dae39dec1034cb0ddc46fa8
