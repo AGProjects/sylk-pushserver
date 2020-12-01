@@ -24,7 +24,10 @@ async def validation_exception_handler(request: Request,
             code = 404
 
     if not error_msg:
-        error_msg = exc.errors()[0]['msg']
+        if '__root__' not in exc.errors()[0]["loc"][2]:
+            error_msg = f'{exc.errors()[0]["msg"]}: {exc.errors()[0]["loc"][2]}'
+        else:
+            error_msg = exc.errors()[0]["msg"]
 
     try:
         request_id = f"{exc.body['event']} - " \
