@@ -38,6 +38,59 @@ def alias_rename(attribute: str) -> str:
     return attribute.replace('_', '-')
 
 
+class AddRequest(BaseModel):
+    app_id: str                    # id provided by the mobile application (bundle id)
+    platform: str                  # 'firebase', 'android', 'apple' or 'ios'
+    token: str                     # destination device token in hex
+    device_id: str                 # the device-id that owns the token (used for logging purposes)
+    silent: bool = True
+    user_agent: str = None
+
+    class Config:
+        alias_generator = alias_rename
+
+    @root_validator(pre=True)
+    def check_required_items_for_add(cls, values):
+
+        app_id, platform = values.get('app-id'), values.get('platform')
+
+        if not app_id:
+            raise ValueError(f"Field 'app-id' required")
+        if not platform:
+            raise ValueError(f"Field 'platform' required")
+
+        platform = fix_platform_name(platform)
+
+        if platform not in ('firebase', 'apple'):
+            raise ValueError(f"'{platform}' platform is not configured")
+
+        pns_register = settings.params.pns_register
+
+        if (app_id, platform) not in pns_register.keys():
+            raise ValueError(f"{platform.capitalize()} {app_id} app "
+                             f"is not configured")
+        return values
+
+    @validator('platform')
+    def platform_valid_values(cls, v):
+        if v not in ('apple', 'ios', 'android', 'firebase'):
+            raise ValueError("platform must be 'apple', 'android' or 'firebase'")
+        return v
+
+
+class AddResponse(BaseModel):
+    app_id: str                    # id provided by the mobile application (bundle id)
+    platform: str                  # 'firebase', 'android', 'apple' or 'ios'
+    token: str                     # destination device token in hex
+    device_id: str          # the device-id that owns the token (used for logging purposes)
+    silent: bool = True
+    user_agent: str = None
+
+    class Config:
+        allow_population_by_field_name = True
+        alias_generator = alias_rename
+
+
 class WakeUpRequest(BaseModel):
     # API expects a json object like:
     app_id: str                    # id provided by the mobile application (bundle id)
