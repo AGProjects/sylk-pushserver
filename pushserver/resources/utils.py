@@ -243,15 +243,7 @@ def log_incoming_request(task: str, host: str, loggers: dict,
     event = body.get('event')
 
     if task == 'log_request':
-        payload = {}
-        for item in body.keys():
-            value = body[item]
-            if item in ('sip_to', 'sip_from'):
-                item = item.split('_')[1]
-            else:
-                item = item.replace('_', '-')
-            payload[item] = value
-
+        payload = fix_payload(body)
         level = 'info'
         if sip_to:
             if device_id:
