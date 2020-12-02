@@ -91,6 +91,33 @@ class AddResponse(BaseModel):
         alias_generator = alias_rename
 
 
+class RemoveRequest(BaseModel):
+    app_id: str                    # id provided by the mobile application (bundle id)
+    device_id: str = None          # the device-id that owns the token (used for logging purposes)
+
+    class Config:
+        alias_generator = alias_rename
+
+    @root_validator(pre=True)
+    def check_required_items_for_add(cls, values):
+
+        app_id = values.get('app-id')
+
+        if not app_id:
+            raise ValueError(f"Field 'app-id' required")
+
+        return values
+
+
+class RemoveResponse(BaseModel):
+    app_id: str                    # id provided by the mobile application (bundle id)
+    device_id: str = None          # the device-id that owns the token (used for logging purposes)
+
+    class Config:
+        allow_population_by_field_name = True
+        alias_generator = alias_rename
+
+
 class WakeUpRequest(BaseModel):
     # API expects a json object like:
     app_id: str                    # id provided by the mobile application (bundle id)
