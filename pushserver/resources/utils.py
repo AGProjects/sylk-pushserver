@@ -220,6 +220,48 @@ def fix_payload(body: dict) -> dict:
     return payload
 
 
+def log_add_request(task: str, host: str, loggers: dict,
+                         request_id: str = None, body: dict = None,
+                         error_msg: str = None) -> None:
+    """
+    Send log messages according to type of event.
+    :param task: `str` type of event to log, can be
+    'log_request', 'log_success' or 'log_failure'
+    :param host: `str` client host where request comes from
+    :param loggers: `dict` global logging instances to write messages (params.loggers)
+    :param request_id: `str` request ID generated on request
+    :param body: `dict` body of request
+    :param error_msg: `str` to show in log
+    """
+    app_id = body.get('app_id')
+    platform = body.get('platform')
+    platform = platform if platform else ''
+    device_id = body.get('device_id')
+    device_id = fix_device_id(device_id) if device_id else None
+
+    if task == 'log_request':
+        payload = fix_payload(body)
+        level = 'info'
+        msg = f'{host} - Add Token - {request_id}: ' \
+                f'{payload}'
+        log_event(msg=msg, level=level, loggers=loggers, to_file=True)
+
+    elif task == 'log_success':
+        payload = fix_payload(body)
+        msg = f'{host} - Add Token - Response {request_id}: ' \
+              f'{payload}'
+        level = 'info'
+        log_event(msg=msg, level=level, loggers=loggers, to_file=True)
+
+    elif task == 'log_failure':
+        level = 'error'
+        resp = error_msg
+        print(resp)
+        msg = f'{host} - Add Token Failed - Response {request_id}: ' \
+              f'{resp}'
+        log_event(loggers=loggers, msg=msg, level=level, to_file=True)
+
+
 
 def log_incoming_request(task: str, host: str, loggers: dict,
                          request_id: str = None, body: dict = None,
