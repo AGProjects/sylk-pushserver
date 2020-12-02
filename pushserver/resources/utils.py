@@ -303,6 +303,37 @@ def log_remove_request(task: str, host: str, loggers: dict,
         log_event(loggers=loggers, msg=msg, level=level, to_file=True)
 
 
+def log_push_request(task: str, host: str, loggers: dict,
+                     request_id: str = None, body: dict = None,
+                     error_msg: str = None) -> None:
+    """
+    Send log messages according to type of event.
+    :param task: `str` type of event to log, can be
+    'log_request', 'log_success' or 'log_failure'
+    :param host: `str` client host where request comes from
+    :param loggers: `dict` global logging instances to write messages (params.loggers)
+    :param request_id: `str` request ID generated on request
+    :param body: `dict` body of request
+    :param error_msg: `str` to show in log
+    """
+    sip_to = body.get('sip_to')
+    event = body.get('event')
+
+    if task == 'log_request':
+        payload = fix_payload(body)
+        level = 'info'
+        msg = f'{host} - Push - {request_id}: ' \
+              f'{event} for {sip_to} ' \
+              f': {payload}'
+        log_event(msg=msg, level=level, loggers=loggers, to_file=True)
+
+    elif task == 'log_failure':
+        level = 'error'
+        resp = error_msg
+        msg = f'{host} - Push Failed - Response {request_id}: ' \
+              f'{resp}'
+        log_event(loggers=loggers, msg=msg, level=level, to_file=True)
+
 
 def log_incoming_request(task: str, host: str, loggers: dict,
                          request_id: str = None, body: dict = None,
