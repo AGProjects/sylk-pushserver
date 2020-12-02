@@ -118,6 +118,19 @@ class RemoveResponse(BaseModel):
         alias_generator = alias_rename
 
 
+class PushRequest(BaseModel):
+    event: str = None              # (required for sylk) 'incoming_session', 'incoming_conference' or 'cancel'
+    call_id: str                   # (required for apple) unique sip parameter
+    sip_from: str                  # (required for firebase) SIP URI for who is calling
+    from_display_name: str = None  # (required for sylk) display name of the caller
+    to: str                        # SIP URI for who is called
+    media_type: str = None         # 'audio', 'video', 'chat', 'sms' or 'file-transfer'
+    reason: str = None             # Cancel reason
+
+    class Config:
+        alias_generator = alias_rename
+
+
 class WakeUpRequest(BaseModel):
     # API expects a json object like:
     app_id: str                    # id provided by the mobile application (bundle id)
