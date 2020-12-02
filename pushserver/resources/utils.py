@@ -208,6 +208,18 @@ def fix_platform_name(platform: str) -> str:
     else:
         return platform
 
+def fix_payload(body: dict) -> dict:
+    payload = {}
+    for item in body.keys():
+        value = body[item]
+        if item in ('sip_to', 'sip_from'):
+            item = item.split('_')[1]
+        else:
+            item = item.replace('_', '-')
+            payload[item] = value
+    return payload
+
+
 
 def log_incoming_request(task: str, host: str, loggers: dict,
                          request_id: str = None, body: dict = None,
