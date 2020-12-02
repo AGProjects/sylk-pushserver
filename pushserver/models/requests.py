@@ -82,7 +82,7 @@ class AddResponse(BaseModel):
     app_id: str                    # id provided by the mobile application (bundle id)
     platform: str                  # 'firebase', 'android', 'apple' or 'ios'
     token: str                     # destination device token in hex
-    device_id: str          # the device-id that owns the token (used for logging purposes)
+    device_id: str                 # the device-id that owns the token (used for logging purposes)
     silent: bool = True
     user_agent: str = None
 
