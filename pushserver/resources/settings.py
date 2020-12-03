@@ -28,14 +28,13 @@ class ConfigParams(object):
 
     def __init__(self, config_dir, debug, ip, port):
 
-        self.default_dir = '/etc/sylk-pushserver'
-        self.current_dir = os.getcwd()
         self.default_host, self.default_port = '127.0.0.1', '8400'
 
         self.config_dir = config_dir
         self.debug = debug
         self.ip, self.port = ip, port
 
+        self.cfg_file = f'general.ini'
         self.dir = self.set_dir()
         self.file = self.set_file()
         self.loggers = self.set_loggers()
@@ -47,25 +46,20 @@ class ConfigParams(object):
     def set_dir(self):
         """
         if config directory was not specified from command line
-        look for general.ini in /etc/sylk-pushserver or ./config
+        look for general.ini in /etc/sylk-pushserver
         if general.ini is not there, server will start with default settings
         """
         dir, error = {}, ''
 
         config_dir = self.config_dir
 
-        if not config_dir:
-            error = f'{self.config_dir} no such directory, ' \
+        msg = f"Reading configuration from {config_dir}"
+        logging.info(msg)
+
+        if not os.path.exists(f'{self.config_dir}/{self.cfg_file}'):
+            config_dir = ''
+            error = f'No {self.cfg_file} found in {self.config_dir}, ' \
                     f'server will run with default settings.'
-            if os.path.exists(f'{self.default_dir}/general.ini'):
-                config_dir = self.default_dir
-            elif os.path.exists(f'{self.current_dir}/config/general.ini'):
-                config_dir = self.current_dir
-            else:
-                error = f'general.ini cofig files not found in ' \
-                        f'{self.default_dir} ' \
-                        f'or {self.current_dir}/config,' \
-                        f'server will run with default settings.'
 
         dir['path'], dir['error'] = config_dir, error
         return dir
@@ -74,7 +68,7 @@ class ConfigParams(object):
 
         file, path, error = {}, '', ''
         if not self.dir.get('error'):
-            path = f"{self.dir['path']}/general.ini"
+            path = f"{self.dir['path']}/{self.cfg_file}"
             error = ''
         elif 'default' in self.dir.get('error'):
             path = ''
@@ -109,67 +103,52 @@ class ConfigParams(object):
     def set_apps(self):
 
         apps = {}
-        apps_path, apps_cred, apps_extra_dir, pns_extra_dir = '', '', '', ''
-        apps_settings = False
+        apps_path = f'{self.config_dir}/applications.ini'
+        apps_cred = f'{self.config_dir}/credentials'
+        apps_extra_dir = f'{self.config_dir}/applications'
+        pns_extra_dir = f'{self.config_dir}/pns'
 
-        if not self.dir['error']:
-            if self.file['path']:
-                config = configparser.ConfigParser()
-                config.read(self.file['path'])
-                try:
-                    apps_path = f"{config['applications']['config_file']}"
-                    apps_cred = f"{config['applications'].get('credentials_folder')}"
-                    apps_extra_dir = f"{config['applications'].get('extra_applications_dir')}"
-                    pns_extra_dir = f"{config['applications'].get('extra_pns_dir')}"
-                    paths_list = [apps_path, apps_cred, apps_extra_dir, pns_extra_dir]
+        if self.file['path']:
+            logging.info(f"Reading: {self.file['path']}")
+            config = configparser.ConfigParser()
+            config.read(self.file['path'])
 
-                    for i, path in enumerate(paths_list):
-                        if not path.startswith('/'):
-                            paths_list[i] = f'{self.config_dir}/{path}'
+            config_apps_path = f"{config['applications'].get('config_file')}"
+            config_apps_cred = f"{config['applications'].get('credentials_folder')}"
+            config_apps_extra_dir = f"{config['applications'].get('extra_applications_dir')}"
+            config_pns_extra_dir = f"{config['applications'].get('extra_pns_dir')}"
+            paths_list = [config_apps_path, config_apps_cred, config_apps_extra_dir, config_pns_extra_dir]
 
-                    apps_path = paths_list[0]
-                    apps_cred = paths_list[1]
-                    apps_extra_dir = paths_list[2]
-                    pns_extra_dir = paths_list[3]
+            for i, path in enumerate(paths_list):
+                if not path.startswith('/'):
+                    paths_list[i] = f'{self.config_dir}/{path}'
 
-                    apps_path_exists = os.path.exists(apps_path)
-                    cred_path_exists = os.path.exists(apps_cred)
-                    extra_apps_dir_exists = os.path.exists(apps_extra_dir)
-                    extra_pns_dir_exists = os.path.exists(pns_extra_dir)
+            config_apps_path = paths_list[0]
+            config_apps_cred = paths_list[1]
+            config_apps_extra_dir = paths_list[2]
+            config_pns_extra_dir = paths_list[3]
 
-                    if not apps_path_exists:
-                        self.dir['error'] = f" Can not start: " \
-                                            f"applications.ini config file not found in " \
-                                            f"{apps_path}"
-                        apps_path, apps_cred, apps_extra_dir, pns_extra_dir = '', '', '', ''
-                    if not cred_path_exists:
-                        self.dir['error'] = f" Can not start: " \
-                                            f"{apps_cred} no such directory"
-                        apps_path, apps_cred, apps_extra_dir , pns_extra_dir = '', '', '', ''
-                    if apps_path_exists and cred_path_exists:
-                        apps_settings = True
+            apps_path_exists = os.path.exists(config_apps_path)
+            cred_path_exists = os.path.exists(config_apps_cred)
+            extra_apps_dir_exists = os.path.exists(config_apps_extra_dir)
+            extra_pns_dir_exists = os.path.exists(config_pns_extra_dir)
 
-                except KeyError:
-                    apps_path, apps_cred, apps_extra_dir = '', '', ''
+            if apps_path_exists:
+                apps_path = config_apps_path
+            if cred_path_exists:
+                apps_cred = config_apps_cred
+            if extra_apps_dir_exists:
+                apps_extra_dir = config_apps_extra_dir
+            if extra_pns_dir_exists:
+                pns_extra_dir = config_pns_extra_dir
+        else:
+            logging.info(self.dir['error'])
 
-            elif os.path.exists(self.default_dir):
-                if os.path.exists(f'{self.default_dir}/applications.ini'):
-                    apps_path = f'{self.default_dir}/applications.ini'
-                    apps_cred = f'{self.default_dir}/credentials'
-                    apps_extra_dir = f'{self.default_dir}/applications'
-                    pns_extra_dir = f'{self.default_dir}/pns'
-                    apps_settings = True
-
-        if not apps_settings:
-            if os.path.exists(self.default_dir):
-                if os.path.exists(f'{self.default_dir}/applications.ini'):
-                    apps_path = f'{self.default_dir}/applications.ini'
-                    apps_cred = f'{self.default_dir}/credentials'
-                    apps_extra_dir = f'{self.default_dir}/applications'
-                    pns_extra_dir = f'{self.default_dir}/pns'
-                    apps_settings = True
-
-        if apps_path:
+        if not os.path.exists(apps_path):
+            self.dir['error'] = f'Required config file not found: {apps_path}'
+            apps_path, apps_cred, apps_extra_dir = '', '', ''
+        else:
+            logging.info(f'Reading: {apps_path}')
             config = configparser.ConfigParser()
             config.read(apps_path)
             if config.sections():
@@ -183,10 +162,6 @@ class ConfigParams(object):
                                             f'{apps_path} config file has not ' \
                                             f'valid application settings'
                         apps_path, apps_cred, apps_extra_dir = '', '', ''
-
-        if not apps_settings:
-            self.dir['error'] = f'Can not start: ' \
-                                f'applications.ini config file not found'
 
         apps['path'] = apps_path
         apps['credentials'] = apps_cred

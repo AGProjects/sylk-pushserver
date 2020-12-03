@@ -2,7 +2,8 @@
 import argparse
 import datetime
 import logging
-
+import os
+import sys
 import uvicorn
 
 from pushserver.resources import settings
@@ -11,6 +12,8 @@ from pushserver.resources.utils import (log_event, resources_available,
 
 
 logging.getLogger("uvicorn").setLevel(logging.WARN)
+
+default_dir = '/etc/sylk-pushserver'
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('-h', '--help',
@@ -27,11 +30,12 @@ parser.add_argument("--port",
                     help="If set, server will run in its address")
 
 parser.add_argument("--config_dir",
-                    default='/etc/sylk-pushserver',
+                    default=None,
+                    metavar='PATH',
                     help="Specify a config directory that contains "
-                         "config.ini and applications.ini files "
-                         "and credentials directory, "
-                         "'/etc/sylk-pushserver' by default.")
+                         "general.ini, applications.ini and "
+                         "the credentials directory, "
+                         "Default it uses '/etc/sylk-pushserver'")
 
 parser.add_argument("--debug",
                     action="store_true",
@@ -43,7 +47,16 @@ args = parser.parse_args()
 logging.basicConfig(level=logging.INFO)
 logging.info(f'{datetime.datetime.now()} Starting Sylk Pushserver...')
 
-settings.init(args.config_dir, args.debug, args.ip, args.port)
+config_dir = default_dir
+
+if args.config_dir is not None:
+    if not os.path.exists(f'{args.config_dir}'):
+        logging.info(f'Specified config directory does not exist')
+        sys.exit(1)
+    config_dir = args.config_dir
+
+settings.init(config_dir, args.debug, args.ip, args.port)
+
 
 if __name__ == '__main__':
 
