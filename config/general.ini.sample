@@ -24,6 +24,9 @@
 ; by default logs go to the journal; uncomment below to also log to a file
 ; log_file = /var/log/sylk-pushserver/push.log
 
+; Base directory for files created by the token storage
+; spool_dir = /var/spool/sylk-pushserver
+
 ; If debug is true, headers and payloads for the outgoing requests will also
 ; be logged
 ; debug = False
@@ -45,3 +48,13 @@
 ; extra_pns_dir = pns/
 
 
+[Cassandra]
+; configuration for token storage to use a Cassandra cluster
+; if nothing is set here it will use a pickle file to store the tokens if
+; API version 2 is used
+
+; Contact points to cassandra cluster
+; cluster_contact_points =
+
+; Keyspace to use to retrieve tokens
+; keyspace =
