@@ -1,1 +1,1 @@
-__all__ = ['requests']
+__all__ = ['cassandra', 'requests']

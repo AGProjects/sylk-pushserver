@@ -6,6 +6,8 @@ import os
 import sys
 import uvicorn
 
+from application.process import process
+
 from pushserver.resources import settings
 from pushserver.resources.utils import (log_event, resources_available,
                                         ssl_cert, try_again)
@@ -57,6 +59,9 @@ if args.config_dir is not None:
 
 settings.init(config_dir, args.debug, args.ip, args.port)
 
+# Since TokenStorage config relies on the config_dir it has to be imported here
+process.configuration.local_directory = config_dir
+from pushserver.resources.storage import TokenStorage
 
 if __name__ == '__main__':
 
