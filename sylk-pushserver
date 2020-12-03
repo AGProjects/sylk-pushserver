@@ -9,7 +9,7 @@ from pushserver.resources import settings
 from pushserver.resources.utils import (log_event, resources_available,
                                         ssl_cert, try_again)
 
-import logging
+
 logging.getLogger("uvicorn").setLevel(logging.WARN)
 
 parser = argparse.ArgumentParser(add_help=False)
