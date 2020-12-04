@@ -66,6 +66,8 @@ from pushserver.resources.storage import TokenStorage
 if __name__ == '__main__':
 
     if not settings.params.dir['error'] or 'default' in settings.params.dir['error']:
+        storage = TokenStorage()
+        storage.load()
         sock_available = False
         while not sock_available:
             host = settings.params.server['host']
