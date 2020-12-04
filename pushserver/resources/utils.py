@@ -233,12 +233,6 @@ def log_add_request(task: str, host: str, loggers: dict,
     :param body: `dict` body of request
     :param error_msg: `str` to show in log
     """
-    app_id = body.get('app_id')
-    platform = body.get('platform')
-    platform = platform if platform else ''
-    device_id = body.get('device_id')
-    device_id = fix_device_id(device_id) if device_id else None
-
     if task == 'log_request':
         payload = fix_payload(body)
         level = 'info'
@@ -275,12 +269,6 @@ def log_remove_request(task: str, host: str, loggers: dict,
     :param body: `dict` body of request
     :param error_msg: `str` to show in log
     """
-    app_id = body.get('app_id')
-    platform = body.get('platform')
-    platform = platform if platform else ''
-    device_id = body.get('device_id')
-    device_id = fix_device_id(device_id) if device_id else None
-
     if task == 'log_request':
         payload = fix_payload(body)
         level = 'info'
