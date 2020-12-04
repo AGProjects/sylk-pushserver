@@ -220,6 +220,15 @@ def fix_payload(body: dict) -> dict:
     return payload
 
 
+def pick_log_function(exc, *args, **kwargs):
+    if ('rm_request' in exc.errors()[0]["loc"][1]):
+        return log_remove_request(**kwargs)
+    if ('add_request' in exc.errors()[0]["loc"][1]):
+        return log_add_request(*args, **kwargs)
+    else:
+        return log_incoming_request(*args, **kwargs)
+
+
 def log_add_request(task: str, host: str, loggers: dict,
                          request_id: str = None, body: dict = None,
                          error_msg: str = None) -> None:

@@ -7,8 +7,7 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from pushserver.resources import settings
-from pushserver.resources.utils import log_incoming_request
-
+from pushserver.resources.utils import pick_log_function
 
 async def validation_exception_handler(request: Request,
                                        exc: Union[RequestValidationError,
@@ -36,14 +35,14 @@ async def validation_exception_handler(request: Request,
     except (KeyError, TypeError):
         request_id = "unknown"
 
-    log_incoming_request(task='log_request', host=host,
-                         loggers=settings.params.loggers,
-                         request_id=request_id, body=exc.body)
+    pick_log_function(exc, task='log_request', host=host,
+                      loggers=settings.params.loggers,
+                      request_id=request_id, body=exc.body)
 
-    log_incoming_request(task='log_failure', host=host,
-                         loggers=settings.params.loggers,
-                         request_id=request_id, body=exc.body,
-                         error_msg=error_msg)
+    pick_log_function(exc, task='log_failure', host=host,
+                      loggers=settings.params.loggers,
+                      request_id=request_id, body=exc.body,
+                      error_msg=error_msg)
 
     content = jsonable_encoder({'code': code,
                                 'description': error_msg,
