@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 import glob
+import os
 
 from setuptools import setup
 
-import __info__ as package_info
+import pushserver.__info__ as package_info
 
 long_description = """
 Sylk Pushserver was designed to act as a central dispatcher for mobile push
@@ -12,6 +13,8 @@ the mobile application customer, in the case of a shared infrastructure, can
 easily audit problems related to the processing of push notifications. 
 """
 
+def find_packages(root):
+    return [directory.replace(os.path.sep, '.') for directory, sub_dirs, files in os.walk(root) if '__init__.py' in files]
 
 def requirements():
     install_requires = []
@@ -31,11 +34,8 @@ setup(name=package_info.__project__,
       author_email=package_info.__email__,
       url=package_info.__webpage__,
       scripts=['sylk-pushserver', 'scripts/sylk-pushclient'],
-      packages=['pushserver/api', 
-                'pushserver/api/errors', 'pushserver/api/routes',
-                'pushserver/applications', 'pushserver/models',
-                'pushserver/resources', 'pushserver/pns'],
-      install_requires=requirements(),
+      packages=find_packages('pushserver'),
+      # install_requires=requirements(),
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Intended Audience :: Service Providers',
