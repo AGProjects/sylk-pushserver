@@ -16,6 +16,11 @@ class PushTokens(Model):
 
 
 class OpenSips(Model):
+    """Useful for servers that need to take routing
+    decisions based on the fact that the user has push
+    tokens, without having to send push notifications
+    """
+
     __table_name__ = 'mobile_devices'
     opensipskey = columns.Text(primary_key=True)
     opensipsval = columns.Text()
