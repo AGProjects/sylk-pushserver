@@ -10,7 +10,10 @@ notifications inside RTC provider infrastructures.  Both the provider and
 the mobile application customer, in the case of a shared infrastructure, can
 easily audit problems related to the processing of push notifications.
 
-Author: Bibiana Rivadeneira <bibo@ag-projects.com>
+Authors: 
+
+ * Bibiana Rivadeneira
+ * Tijmen de Mes
 
 
 ## License
