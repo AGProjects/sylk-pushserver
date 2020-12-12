@@ -1,3 +1,16 @@
+sylk-pushserver (2.0.0) unstable; urgency=medium
+
+  * Added mobile tokens storage
+  * Added v2 routes for storage API
+  * Fixed debian packaging
+  * Cleaned up log functions
+  * Changed shebang so it runs in a virtual env
+  * Refactored configuration loading
+  * Use payload fix function
+  * Return more usefull errors if request validation fails
+
+ -- Adrian Georgescu <ag@ag-projects.com>  Sat, 12 Dec 2020 12:32:53 +0100
+
 sylk-pushserver (1.0.7) unstable; urgency=medium
 
   * Purging firebasd token on 404
