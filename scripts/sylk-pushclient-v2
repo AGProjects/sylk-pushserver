@@ -1,0 +1,135 @@
+#!/usr/bin/python
+
+import json
+import logging
+import re
+import sys
+import requests
+
+try:
+    import pymysql
+except ImportError:
+    pass
+
+from argparse import ArgumentParser
+
+
+if __name__ == '__main__':
+    parser = ArgumentParser()
+    subparsers = parser.add_subparsers(dest='action')
+    parser.add_argument('--url', dest='url', required=True, help='Base push URL')
+    parser.add_argument('--account', dest='account', required=True, help='Account')
+    
+    subparserA = subparsers.add_parser('push', help='Send push request')
+    subparserA.add_argument('--mediatype', dest='media_type', default="audio", required=False, help='Audio, Video or Message')
+    subparserA.add_argument('--callid', dest='call_id', required=True, help='Call ID')
+    subparserA.add_argument('--event', dest='event', required=False, help='Event', default='incoming_session')
+    subparserA.add_argument('--from', dest='from_uri', required=True, help='From')
+    subparserA.add_argument('--from_name', dest='from_name', required=False, help='From name')
+    subparserA.add_argument('--to', dest='to_uri', required=True, help='To')
+    
+    subparserB = subparsers.add_parser('add', help='Add a push token')
+    subparserB.add_argument('--platform', dest='platform', help='Platform')
+    subparserB.add_argument('--appid', dest='appid', required=True, help='App ID')
+    subparserB.add_argument('--token', dest='device_token', required=True, help='Device token')
+    subparserB.add_argument('--deviceid', dest='device_id', required=True, help='Device Id')
+    subparserB.add_argument('--silent', dest='silent', default="1", required=False, help='Silent')
+    subparserB.add_argument('--user_agent', dest='user_agent', default="None", required=False, help='User Agent')
+
+    subparserC = subparsers.add_parser('remove', help='Remove a push token')
+    subparserC.add_argument('--appid', dest='appid', required=True, help='App ID')
+    subparserC.add_argument('--deviceid', dest='device_id', required=True, help='Device Id')
+
+    options = parser.parse_args()
+    try:
+        from_uri = re.sub(r'^"|"$', '', options.from_uri)
+    except AttributeError:
+        pass
+    try:
+        from_name = options.from_name.strip('\"') if options.from_name else None
+    except AttributeError:
+        pass
+
+    try:
+        (token1, token2) = options.device_token.split("#")
+    except ValueError:
+        token1 = options.device_token
+        token2 = None
+    except AttributeError:
+        pass
+
+    try:
+        media_type = options.media_type
+
+        if ("video" in options.media_type):
+            media_type = 'video'
+        elif ("audio" in options.media_type):
+            media_type = 'audio'
+    except AttributeError:
+        pass
+
+
+    try:
+        token = token2 if (token2 and options.event == 'cancel') else token1
+    except NameError:
+        pass
+    
+    print("Using API v2")
+    if options.url[-1] == '/':
+        options.url=options.url[:-1]
+
+    url = '{}/{}/{}'.format(options.url, 'v2/tokens', options.account)
+
+    if options.action == 'add':
+        log_params = {'platform': options.platform,
+                      'app-id': options.appid,
+                      'token': token,
+                      'device-id': options.device_id,
+                      'silent': options.silent,
+                      'user-agent': options.user_agent}
+    elif options.action == 'remove':
+        log_params = {'app-id': options.appid,
+                      'device-id': options.device_id}
+    else:
+        log_params = {'media-type': media_type,
+                      'event': options.event,
+                      'from': from_uri,
+                      'from-display-name': from_name or from_uri,
+                      'to': options.to_uri,
+                      'call-id': options.call_id}
+        url = '{}/{}/{}/push'.format(options.url, 'v2/tokens', options.account)
+
+    def getMethod(*args, **kwargs):
+        if options.action == 'remove':
+            return requests.delete(*args, **kwargs)
+        else:
+            return requests.post(*args, **kwargs)
+
+    try:
+        r = getMethod(url, timeout=5, json=log_params)
+        if r.status_code == 200:
+            print("%s to %s response 200 OK: %s" % (options.action, url, r.text))
+            body = r.json()
+            try:
+                failure = body['data']['body']['_content']['failure']
+                if failure == 1:
+                    # A push client may want to act based on various response codes
+                    # https://firebase.google.com/docs/cloud-messaging/http-server-ref#error-codes
+                    reason = body['data']['body']['_content']['results'][0]['error']
+                    if reason == 'NotRegistered':
+                        log.info("Token %s must be purged" % token)
+                        #q = "delete from push_tokens where token = '%s'" % token   
+                        #con = pymysql.connect('localhost', 'opensips', 'XYZ', 'opensips')
+                        #with con: 
+                        #    cur = con.cursor()
+                        #    cur.execute(q)
+            except KeyError:
+                pass 
+
+            sys.exit(0)
+        else:
+            print("%s to %s failed: %d: %s" % (options.action, url, r.status_code, r.text))
+            sys.exit(1)
+    except Exception as e:
+        print("%s to %s failed: connection error" % (options.action, url))
+        sys.exit(1)
