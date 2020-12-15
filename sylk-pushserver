@@ -5,13 +5,16 @@ import logging
 import os
 import sys
 import uvicorn
+from pushserver import __info__ as package_info
 
 from application.process import process
-
+from application import log
 from pushserver.resources import settings
 from pushserver.resources.utils import (log_event, resources_available,
                                         ssl_cert, try_again)
 
+name = 'sylk-pushserver'
+fullname = "Sylk Pushserver"
 
 logging.getLogger("uvicorn").setLevel(logging.WARN)
 
@@ -39,6 +42,11 @@ parser.add_argument("--config_dir",
                          "the credentials directory, "
                          "Default it uses '/etc/sylk-pushserver'")
 
+parser.add_argument('--no-fork',
+                    action='store_false',
+                    dest='fork',
+                    help='log and run in the foreground')
+
 parser.add_argument("--debug",
                     action="store_true",
                     default=False,
@@ -46,14 +54,33 @@ parser.add_argument("--debug",
 
 args = parser.parse_args()
 
-logging.basicConfig(level=logging.INFO)
-logging.info(f'{datetime.datetime.now()} Starting Sylk Pushserver...')
+if args.fork:
+    try:
+       from systemd.journal import JournaldLogHandler
+    except ImportError:
+       from systemd.journal import JournalHandler
 
+    try:
+        journal_handler = JournaldLogHandler()
+    except NameError:
+        journal_handler = JournalHandler(SYSLOG_IDENTIFIER='sylk-pushserver')
+
+    log.set_handler(journal_handler)
+    log.capture_output()
+
+root_logger = log.get_logger()
+root_logger.name = name
+
+if not args.fork:
+   console_formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+   log.set_default_formatter(console_formatter)
+
+log.info('Starting %s %s' % (fullname, package_info.__version__))
 config_dir = default_dir
 
 if args.config_dir is not None:
     if not os.path.exists(f'{args.config_dir}'):
-        logging.info(f'Specified config directory does not exist')
+        log.info(f'Specified config directory does not exist')
         sys.exit(1)
     config_dir = args.config_dir
 

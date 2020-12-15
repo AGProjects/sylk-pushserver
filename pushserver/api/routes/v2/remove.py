@@ -81,9 +81,8 @@ async def remove_requests(account: str,
         description = 'access denied by access list'
         data = {}
 
-        if settings.params.loggers['debug']:
-            log_event(loggers=settings.params.loggers,
-                      msg=msg, level='deb', to_file=True)
+        log_event(loggers=settings.params.loggers,
+                  msg=msg, level='deb')
 
     return JSONResponse(status_code=code, content={'code': code,
                                                    'description': description,

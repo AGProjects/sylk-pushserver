@@ -3,12 +3,7 @@ import logging
 import os
 from ipaddress import ip_network
 from pushserver.pns.register import get_pns_from_config
-
-
-try:
-    from systemd.journal import JournaldLogHandler
-except ImportError:
-    from systemd.journal import JournalHandler
+from application import log
 
 
 class ConfigParams(object):
@@ -54,7 +49,7 @@ class ConfigParams(object):
         config_dir = self.config_dir
 
         msg = f"Reading configuration from {config_dir}"
-        logging.info(msg)
+        log.info(msg)
 
         if not os.path.exists(f'{self.config_dir}/{self.cfg_file}'):
             config_dir = ''
@@ -181,49 +176,43 @@ class ConfigParams(object):
             config.read(self.file['path'])
 
             try:
-                log_path = f"{config['server']['log_file']}"
-                try:
-                    str_debug = config['server']['debug'].lower()
-                except KeyError:
-                    str_debug = False
-                debug = True if str_debug == 'true' else False
-                debug = debug or self.debug
+                log_to_file = f"{config['server']['log_to_file']}"
+                log_to_file = True if log_to_file.lower() == 'true' else False
             except KeyError:
-                log_path, debug = default_path, False
+                pass
+            else:
+                if log_to_file:
+                    try:
+                        log_path = f"{config['server']['log_file']}"
+                    except KeyError:
+                        log_path = default_path
 
-        logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
-
-        formatter = logging.Formatter('[%(levelname)s] %(message)s')
-
-        # log to file
-        if log_path:
-            logger_file = logging.getLogger('to_file')
-            logger_file.setLevel(logging.DEBUG)
             try:
-                loggers['to_file'] = logger_file
-                hdlr = logging.FileHandler(log_path)
-                hdlr.setFormatter(formatter)
-                logger_file.addHandler(hdlr)
-            except PermissionError:
-                self.dir['error'] = f'Permission denied: {log_path}, ' \
-                                    f'debug log file requires ' \
-                                    f'run sylk-pushserver with sudo.'
-        # log to journal
-        logger_journal = logging.getLogger('to_journal')
-        logger_journal.setLevel(logging.DEBUG)
+                str_debug = config['server']['debug'].lower()
+            except KeyError:
+                str_debug = False
+            debug = True if str_debug == 'true' else False
+            debug = debug or self.debug
+
+        formatter = logging.Formatter('%(asctime)s [%(levelname)-8s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+        logger_journal = logging.getLogger()
 
         loggers['to_journal'] = logger_journal
 
-        try:
-            journal_handler = JournaldLogHandler()
-        except NameError:
-            journal_handler = JournalHandler()
-
-        journal_handler.setFormatter(formatter)
-        logger_journal.addHandler(journal_handler)
+        if log_path:
+            try:
+                hdlr = logging.FileHandler(log_path)
+                hdlr.setFormatter(formatter)
+                hdlr.setLevel(logging.DEBUG)
+                logger_journal.addHandler(hdlr)
+            except PermissionError:
+                log.warning(f'Permission denied for log file: {log_path}, ' \
+                            f'logging will only be in the journal or foreground')
 
         debug = debug or self.debug
-        loggers['debug'] = debug
+
+        if debug:
+            logger_journal.setLevel(logging.DEBUG)
 
         return loggers
 
