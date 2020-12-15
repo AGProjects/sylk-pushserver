@@ -114,7 +114,8 @@ Where:
 
 The response is a json with the following structure:
 
-```{ 
+```
+{
 'code': 'a numeric code equal to the HTTP response code',
 'description': 'a detailed text description',
 'data' : {}
@@ -172,8 +173,8 @@ and values as in API version 1. The API has the following methods:
 
 ### Sample client code
 
-See *scripts/sylk-pushclient*
-See *scripts/sylk-pushclient-v2*
+* See [sylk-pushclient](scripts/sylk-pushclient)
+* See [sylk-pushclient-v2](scripts/sylk-pushclient-v2)
 
 
 ### External APIs
