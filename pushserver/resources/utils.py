@@ -149,7 +149,8 @@ def log_event(loggers: dict, msg: str, level: str = 'deb') -> None:
     :param to_file: `bool` write just in file if True
     """
     logger = loggers.get('to_journal')
-
+    if logger.level != logging.DEBUG and loggers['debug'] is True:
+        logger.setLevel(logging.DEBUG)
     if level == 'info':
         logger.info(msg)
 

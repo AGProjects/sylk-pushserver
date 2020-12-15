@@ -210,7 +210,7 @@ class ConfigParams(object):
                             f'logging will only be in the journal or foreground')
 
         debug = debug or self.debug
-
+        loggers['debug'] = debug
         if debug:
             logger_journal.setLevel(logging.DEBUG)
 
