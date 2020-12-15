@@ -100,16 +100,15 @@ class AppleConn(ApplePNS):
         cert_file_name = self.cert_file.split('/')[-1]
         key_file_name = self.key_file.split('/')[-1] if self.key_file else None
 
-        if self.loggers['debug']:
-            if key_file_name:
-                msg = f'{self.app_name.capitalize()} app: Connecting to {host}:{port} ' \
-                      f'using {cert_file_name} certificate ' \
-                      f'and {key_file_name} key files'
-            else:
-                msg = f'{self.app_name.capitalize()} app: Connecting to {host}:{port} ' \
-                      f'using {cert_file_name} certificate'
+        if key_file_name:
+            msg = f'{self.app_name.capitalize()} app: Connecting to {host}:{port} ' \
+                    f'using {cert_file_name} certificate ' \
+                    f'and {key_file_name} key files'
+        else:
+            msg = f'{self.app_name.capitalize()} app: Connecting to {host}:{port} ' \
+                    f'using {cert_file_name} certificate'
 
-            log_event(loggers=self.loggers, msg=msg, level='deb')
+        log_event(loggers=self.loggers, msg=msg, level='deb')
 
         return connection
 

@@ -22,6 +22,7 @@
 ; allowed_hosts = [] 
 
 ; by default logs go to the journal; uncomment below to also log to a file
+; log_to_file = true
 ; log_file = /var/log/sylk-pushserver/push.log
 
 ; Base directory for files created by the token storage

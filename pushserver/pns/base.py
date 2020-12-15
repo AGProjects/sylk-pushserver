@@ -87,16 +87,11 @@ class PushRequest(object):
         msg = f'outgoing {log_platform} request {self.request_id} to {log_path}'
         log_event(loggers=self.loggers, msg=msg, level=level)
 
-        if self.loggers['debug']:
-            level = 'deb'
-            msg = f'outgoing {log_platform} request {self.request_id} to {log_path}'
-            log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
+        msg = f'outgoing {log_platform} request {self.request_id} headers: {self.headers}'
+        log_event(loggers=self.loggers, msg=msg, level='deb')
 
-            msg = f'outgoing {log_platform} request {self.request_id} headers: {self.headers}'
-            log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
-
-            msg = f'outgoing {log_platform} request {self.request_id} body: {self.payload}'
-            log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
+        msg = f'outgoing {log_platform} request {self.request_id} body: {self.payload}'
+        log_event(loggers=self.loggers, msg=msg, level='deb')
 
     def log_error(self):
         level = 'error'
@@ -137,13 +132,12 @@ class PushRequest(object):
         results = []
 
         for log_url in self.log_remote['log_urls']:
-            if self.loggers['debug']:
-                msg = f'{task} request {self.request_id} to {log_url}'
-                log_event(loggers=self.loggers, msg=msg, level='info')
-                msg = f'{task} request {self.request_id} to {log_url} headers: {headers}'
-                log_event(loggers=self.loggers, msg=msg, level='info', to_file=True)
-                msg = f'{task} request {self.request_id} to {log_url} body: {payload}'
-                log_event(loggers=self.loggers, msg=msg, level='info', to_file=True)
+            msg = f'{task} request {self.request_id} to {log_url}'
+            log_event(loggers=self.loggers, msg=msg, level='deb')
+            msg = f'{task} request {self.request_id} to {log_url} headers: {headers}'
+            log_event(loggers=self.loggers, msg=msg, level='deb')
+            msg = f'{task} request {self.request_id} to {log_url} body: {payload}'
+            log_event(loggers=self.loggers, msg=msg, level='deb')
 
         try:
             with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
@@ -162,15 +156,11 @@ class PushRequest(object):
                 for f in futures
             ]
         except requests.exceptions.ConnectionError as exc:
-            if self.loggers['debug']:
-                msg = f'{task} for {self.request_id}: connection error {exc}'
-                log_event(loggers=self.loggers, msg=msg, level='error')
-                log_event(loggers=self.loggers, msg=msg, level='error', to_file=True)
+            msg = f'{task} for {self.request_id}: connection error {exc}'
+            log_event(loggers=self.loggers, msg=msg, level='error')
         except requests.exceptions.ReadTimeout as exc:
-            if self.loggers['debug']:
-                msg = f'{task} for {self.request_id}: connection error {exc}'
-                log_event(loggers=self.loggers, msg=msg, level='error')
-                log_event(loggers=self.loggers, msg=msg, level='error', to_file=True)
+            msg = f'{task} for {self.request_id}: connection error {exc}'
+            log_event(loggers=self.loggers, msg=msg, level='error')
 
         if not results:
             return
@@ -188,31 +178,17 @@ class PushRequest(object):
 
                 if value:
 
-                    if self.loggers['debug']:
-                        msg = f'{task} response for request {self.request_id} from {url} - ' \
-                              f'{code} {log_key}: {value}'
-                        log_event(loggers=self.loggers, msg=msg, level='info')
-                        log_event(loggers=self.loggers, msg=msg, level='info', to_file=True)
-
+                    msg = f'{task} response for request {self.request_id} from {url} - ' \
+                          f'{code} {log_key}: {value}'
+                    log_event(loggers=self.loggers, msg=msg, level='deb')
                 else:
-                    if self.loggers['debug']:
-                        msg = f'{task} response for request {self.request_id} - ' \
-                              f'code: {code}, key not found'
-                        log_event(loggers=self.loggers, msg=msg, level='error')
-
-                        msg = f'{task} response for request {self.request_id} - ' \
-                              f'{log_key} key not found in: {text}'
-                        log_event(loggers=self.loggers, msg=msg, level='error', to_file=True)
-
+                    msg = f'{task} response for request {self.request_id} - ' \
+                          f'code: {code}, key not found'
+                    log_event(loggers=self.loggers, msg=msg, level='error')
             else:
-
-                if self.loggers['debug']:
-                    msg = f'{task} code response for request {self.request_id} ' \
-                          f'from {url}: {code}'
-                    log_event(loggers=self.loggers, msg=msg, level='info')
-                    msg = f'{task} response for request {self.request_id} ' \
-                          f'from {url}: {code} {text}'
-                    log_event(loggers=self.loggers, msg=msg, level='info', to_file=True)
+                msg = f'{task} response for request {self.request_id} ' \
+                      f'from {url}: {code} {text}'
+                log_event(loggers=self.loggers, msg=msg, level='deb')
 
     def log_results(self):
         """
@@ -223,23 +199,20 @@ class PushRequest(object):
         reason = self.results['reason']
         url = self.results['url']
 
-        if self.loggers['debug']:
-            level = 'info'
-            body = json.dumps(body)
-            msg = f"outgoing {self.platform.title()} response for request " \
-                  f"{self.request_id} body: {body}"
-            log_event(loggers=self.loggers, msg=msg, level=level, to_file=True)
+        level = 'info'
+        body = json.dumps(body)
+        msg = f"outgoing {self.platform.title()} response for request " \
+                f"{self.request_id} body: {body}"
+        log_event(loggers=self.loggers, msg=msg, level='deb')
 
         if code == 200:
-            level = 'info'
             msg = f"outgoing {self.platform.title()} response for request " \
                   f"{self.request_id}: push notification sent successfully"
             log_event(loggers=self.loggers, msg=msg, level=level)
         else:
-            level = 'error'
             msg = f"outgoing {self.platform.title()} response for " \
                   f"{self.request_id}, push failed with code {code}: {reason}"
-            log_event(loggers=self.loggers, msg=msg, level=level)
+            log_event(loggers=self.loggers, msg=msg, level='error')
 
         body = {'incoming_body': self.wp_request.__dict__,
                 'outgoing_headers': self.headers,

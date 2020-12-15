@@ -16,7 +16,6 @@ def get_server() -> FastAPI:
     server.add_event_handler("startup", create_start_server_handler())
     server.add_exception_handler(RequestValidationError, validation_exception_handler)
     server.include_router(router)
-
     return server
 
 
@@ -64,8 +63,11 @@ def create_start_server_handler() -> Callable:  # type: ignore
         register = settings.params.register
 
         pns_register = register['pns_register']
-        msg = f"Loaded {len(pns_register)} applications from " \
-              f"{settings.params.apps['path']}:"
+        if settings.params.apps['path']:
+            msg = f"Loaded {len(pns_register)} applications from " \
+                f"{settings.params.apps['path']}:"
+        else:
+            msg = f"Loaded {len(pns_register)} applications"
         log_event(loggers=loggers, msg=msg, level=level)
 
         for app in pns_register.keys():
@@ -76,33 +78,32 @@ def create_start_server_handler() -> Callable:  # type: ignore
 
             log_event(loggers=loggers, msg=msg, level=level)
 
-            if settings.params.loggers['debug']:
-                headers_class = pns_register[app]['headers_class']
-                payload_class = pns_register[app]['payload_class']
+            headers_class = pns_register[app]['headers_class']
+            payload_class = pns_register[app]['payload_class']
 
-                msg = f"{name.capitalize()} app {app_id} classes: " \
-                      f"{headers_class.__name__}, {payload_class.__name__}"
+            msg = f"{name.capitalize()} app {app_id} classes: " \
+                  f"{headers_class.__name__}, {payload_class.__name__}"
+            log_event(loggers=loggers, msg=msg, level='deb')
+
+            log_remote = pns_register[app]['log_remote']
+            if log_remote['error']:
+                msg = f"{name.capitalize()} loading of log remote settings failed: " \
+                      f"{log_remote['error']}"
+                log_event(loggers=loggers, msg=msg, level='warn')
+            elif log_remote.get('log_remote_urls'):
+                log_settings = ''
+                for k, v in log_remote.items():
+                    if k == 'error':
+                        continue
+                    if k == 'log_urls':
+                        v = ', '.join(v)
+                    if k == 'log_remote_key' and not v:
+                        continue
+                    if k == 'log_remote_timeout' and not v:
+                        continue
+                    log_settings += f'{k}: {v} '
+                msg = f'{name.capitalize()} log remote settings: {log_settings}'
                 log_event(loggers=loggers, msg=msg, level='deb')
-
-                log_remote = pns_register[app]['log_remote']
-                if log_remote['error']:
-                    msg = f"{name.capitalize()} loading of log remote settings failed: " \
-                          f"{log_remote['error']}"
-                    log_event(loggers=loggers, msg=msg, level='deb')
-                elif log_remote.get('log_remote_urls'):
-                    log_settings = ''
-                    for k, v in log_remote.items():
-                        if k == 'error':
-                            continue
-                        if k == 'log_urls':
-                            v = ', '.join(v)
-                        if k == 'log_remote_key' and not v:
-                            continue
-                        if k == 'log_remote_timeout' and not v:
-                            continue
-                        log_settings += f'{k}: {v} '
-                    msg = f'{name.capitalize()} log remote settings: {log_settings}'
-                    log_event(loggers=loggers, msg=msg, level='deb')
 
         invalid_apps = register['invalid_apps']
         for app in invalid_apps.keys():
@@ -111,20 +112,21 @@ def create_start_server_handler() -> Callable:  # type: ignore
             reason = invalid_apps[app]['reason']
             msg = f"{name.capitalize()} app with {app_id} id for {platform} platform " \
                   f"will not be available, reason: {reason}"
-            log_event(loggers=loggers, msg=msg, level=level)
+            log_event(loggers=loggers, msg=msg, level='warn')
 
         pnses = register['pnses']
 
-        if settings.params.loggers['debug']:
-            level = 'deb'
+        if len(pnses) == 0:
+            msg = f'Loaded {len(pnses)} Push notification services'
+        else:
             msg = f'Loaded {len(pnses)} Push notification services: ' \
-                  f'{", ".join(pnses)}'
-            log_event(loggers=loggers, msg=msg, level=level)
+                    f'{", ".join(pnses)}'
+        log_event(loggers=loggers, msg=msg, level='deb')
 
-            for pns in pnses:
-                msg = f"{pns.split('PNS')[0]} Push Notification Service - " \
-                      f"{pns} class"
-                log_event(loggers=loggers, msg=msg, level=level)
+        for pns in pnses:
+            msg = f"{pns.split('PNS')[0]} Push Notification Service - " \
+                    f"{pns} class"
+            log_event(loggers=loggers, msg=msg, level='deb')
 
         if settings.params.allowed_pool:
             nets = [net.with_prefixlen for net in settings.params.allowed_pool]
@@ -132,9 +134,8 @@ def create_start_server_handler() -> Callable:  # type: ignore
                   f"{', '.join(nets)}"
             log_event(loggers=loggers, msg=msg, level=level)
 
-        if settings.params.loggers['debug']:
-            msg = 'Server is now ready to answer requests'
-            log_event(loggers=loggers, msg=msg, level='deb')
+        msg = 'Server is now ready to answer requests'
+        log_event(loggers=loggers, msg=msg, level='deb')
 
         ip, port = settings.params.server['host'], settings.params.server['port']
         msg = f'Sylk Pushserver listening on http://{ip}:{port}'

@@ -140,9 +140,7 @@ def check_host(host, allowed_hosts) -> bool:
 
     return False
 
-
-def log_event(loggers: dict, msg: str, level: str = 'deb',
-              to_file: bool = False) -> None:
+def log_event(loggers: dict, msg: str, level: str = 'deb') -> None:
     """
     Write log messages into log file and in journal if specified.
     :param loggers: `dict` global logging instances to write messages (params.loggers)
@@ -150,31 +148,18 @@ def log_event(loggers: dict, msg: str, level: str = 'deb',
     :param level: `str` info, error, deb or warn
     :param to_file: `bool` write just in file if True
     """
-    
-    if loggers.get('to_file'):
-        logger = loggers.get('to_file')
-    else:
-        logger = loggers.get('to_journal')
-
-    if len(logger.handlers) > 1:
-        logger.handlers = [logger.handlers[0]]
-
-    msg = f'{datetime.now()} {msg}'
+    logger = loggers.get('to_journal')
 
     if level == 'info':
-        logger.setLevel(logging.INFO)
         logger.info(msg)
 
     elif level == 'error':
-        logger.setLevel(logging.ERROR)
         logger.error(msg)
 
     elif level == 'warn':
-        logger.setLevel(logging.WARNING)
         logger.warning(msg)
 
     elif level in ('deb', 'debug'):
-        logger.setLevel(logging.DEBUG)
         logger.debug(msg)
 
 
@@ -247,14 +232,14 @@ def log_add_request(task: str, host: str, loggers: dict,
         level = 'info'
         msg = f'{host} - Add Token - {request_id}: ' \
                 f'{payload}'
-        log_event(msg=msg, level=level, loggers=loggers, to_file=True)
+        log_event(msg=msg, level=level, loggers=loggers)
 
     elif task == 'log_success':
         payload = fix_payload(body)
         msg = f'{host} - Add Token - Response {request_id}: ' \
               f'{payload}'
         level = 'info'
-        log_event(msg=msg, level=level, loggers=loggers, to_file=True)
+        log_event(msg=msg, level=level, loggers=loggers)
 
     elif task == 'log_failure':
         level = 'error'
@@ -262,7 +247,7 @@ def log_add_request(task: str, host: str, loggers: dict,
         print(resp)
         msg = f'{host} - Add Token Failed - Response {request_id}: ' \
               f'{resp}'
-        log_event(loggers=loggers, msg=msg, level=level, to_file=True)
+        log_event(loggers=loggers, msg=msg, level=level)
 
 
 def log_remove_request(task: str, host: str, loggers: dict,
@@ -283,21 +268,21 @@ def log_remove_request(task: str, host: str, loggers: dict,
         level = 'info'
         msg = f'{host} - Remove Token - {request_id}: ' \
               f'{payload}'
-        log_event(msg=msg, level=level, loggers=loggers, to_file=True)
+        log_event(msg=msg, level=level, loggers=loggers)
 
     elif task == 'log_success':
         payload = fix_payload(body)
         msg = f'{host} - Remove Token - Response {request_id}: ' \
               f'{payload}'
         level = 'info'
-        log_event(msg=msg, level=level, loggers=loggers, to_file=True)
+        log_event(msg=msg, level=level, loggers=loggers)
 
     elif task == 'log_failure':
         level = 'error'
         resp = error_msg
         msg = f'{host} - Remove Token Failed - Response {request_id}: ' \
               f'{resp}'
-        log_event(loggers=loggers, msg=msg, level=level, to_file=True)
+        log_event(loggers=loggers, msg=msg, level=level)
 
 
 def log_push_request(task: str, host: str, loggers: dict,
@@ -322,14 +307,14 @@ def log_push_request(task: str, host: str, loggers: dict,
         msg = f'{host} - Push - {request_id}: ' \
               f'{event} for {sip_to} ' \
               f': {payload}'
-        log_event(msg=msg, level=level, loggers=loggers, to_file=True)
+        log_event(msg=msg, level=level, loggers=loggers)
 
     elif task == 'log_failure':
         level = 'error'
         resp = error_msg
         msg = f'{host} - Push Failed - Response {request_id}: ' \
               f'{resp}'
-        log_event(loggers=loggers, msg=msg, level=level, to_file=True)
+        log_event(loggers=loggers, msg=msg, level=level)
 
 
 def log_incoming_request(task: str, host: str, loggers: dict,
@@ -372,17 +357,17 @@ def log_incoming_request(task: str, host: str, loggers: dict,
         else:
             msg = f'incoming {platform.title()} request {request_id}: ' \
                   f' from {host}: {payload}'
-        log_event(msg=msg, level=level, loggers=loggers, to_file=True)
+        log_event(msg=msg, level=level, loggers=loggers)
 
     elif task == 'log_success':
         msg = f'incoming {platform.title()} response for {request_id}: ' \
               f'push accepted'
         level = 'info'
-        log_event(msg=msg, level=level, loggers=loggers, to_file=True)
+        log_event(msg=msg, level=level, loggers=loggers)
 
     elif task == 'log_failure':
         level = 'error'
         resp = error_msg
         msg = f'incoming {platform.title()} from {host} response for {request_id}, ' \
               f'push rejected: {resp}'
-        log_event(loggers=loggers, msg=msg, level=level, to_file=True)
+        log_event(loggers=loggers, msg=msg, level=level)
