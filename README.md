@@ -124,9 +124,56 @@ The response is a json with the following structure:
 *data* contains an arbitrary dictionary with a structure depending on the
 request type and the remote server response.
 
+### V2
+
+API version 2 supports storage of the push tokens in a Apache Cassandra Cluster
+or locally in a pickle file. The elements in the API methods are the same type
+and values as in API version 1. The API has the following methods:
+
+**POST** `/v2/tokens/{account}` - Stores a token for `{account}`
+```
+{
+    "app-id": "string",
+    "platform": "string",
+    "token": "string",
+    "device-id": "string",
+    "silent": true,
+    "user-agent": "string"
+}
+```
+
+**DELETE** `/v2/tokens/{account}` - Removes a token for `{account}`
+
+```
+{
+    "app-id": "string",
+    "device-id": "string"
+}
+```
+
+**POST** `/v2/tokens/{account}/push` - Sends a push notification(s) for `{account}`
+
+```
+{
+    "app-id": "string",
+    "platform": "string",
+    "event": "string",
+    "token": "string",
+    "device-id": "string",
+    "call-id": "string",
+    "from": "string",
+    "from-display-name": "string",
+    "to": "string",
+    "media-type": "string",
+    "silent": true,
+    "reason": "string"
+}
+```
+
 ### Sample client code
 
 See *scripts/sylk-pushclient*
+See *scripts/sylk-pushclient-v2*
 
 
 ### External APIs
@@ -146,7 +193,7 @@ links may change:
 
 Install the AG Projects debian software signing key:
 
-wget http://download.ag-projects.com/agp-debian-gpg.key 
+wget http://download.ag-projects.com/agp-debian-gpg.key
 
 sudo apt-key add agp-debian-gpg.key
 
