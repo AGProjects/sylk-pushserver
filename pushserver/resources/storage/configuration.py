@@ -47,7 +47,7 @@ class CassandraConfig(ConfigSection):
 
     cluster_contact_points = ConfigSetting(type=HostnameList, value=None)
     keyspace = ConfigSetting(type=str, value='')
-
+    table = ConfigSetting(type=str, value='')
 
 class ServerConfig(ConfigSection):
     __cfgfile__ = 'general.ini'

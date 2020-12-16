@@ -3,7 +3,7 @@ from cassandra.cqlengine.models import Model
 
 
 class PushTokens(Model):
-    __table_name__ = 'push_tokens_tester'
+    __table_name__   = 'push_tokens'
     username         = columns.Text(partition_key=True)
     domain           = columns.Text(partition_key=True)
     device_id        = columns.Text(primary_key=True)

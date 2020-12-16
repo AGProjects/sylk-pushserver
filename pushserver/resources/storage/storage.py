@@ -32,6 +32,8 @@ else:
         from cassandra.io import asyncioreactor
         from cassandra.policies import DCAwareRoundRobinPolicy
         from pushserver.models.cassandra import PushTokens, OpenSips
+        if CassandraConfig.table:
+            PushTokens.__table_name__ = CassandraConfig.table
 
 
 class FileStorage(object):

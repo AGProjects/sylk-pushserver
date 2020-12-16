@@ -59,3 +59,6 @@
 
 ; Keyspace to use to retrieve tokens
 ; keyspace =
+
+; Table to use to store tokens, default it will use push_tokens
+; table =
