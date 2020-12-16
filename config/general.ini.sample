@@ -62,3 +62,6 @@
 
 ; Table to use to store tokens, default it will use push_tokens
 ; table =
+
+; Debug cassandra
+; debug = false

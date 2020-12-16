@@ -1,6 +1,8 @@
 import os
 import _pickle as pickle
 
+import logging
+
 from application.python.types import Singleton
 from application.system import makedirs
 
@@ -142,6 +144,10 @@ class TokenStorage(object, metaclass=Singleton):
             log_event(loggers=settings.params.loggers, msg=msg, level='info')
         makedirs(ServerConfig.spool_dir.normalized)
         if CASSANDRA_MODULES_AVAILABLE and CassandraConfig.cluster_contact_points:
+            if CassandraConfig.debug:
+                logging.getLogger('cassandra').setLevel(logging.DEBUG)
+            else:
+                logging.getLogger('cassandra').setLevel(logging.INFO)
             log_event(loggers=settings.params.loggers, msg='Using Cassandra for token storage', level='info')
             return CassandraStorage()
         else:
