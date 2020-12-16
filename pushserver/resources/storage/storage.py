@@ -29,6 +29,7 @@ else:
         pass
     else:
         CASSANDRA_MODULES_AVAILABLE = True
+        from cassandra import InvalidRequest
         from cassandra.cqlengine.query import LWTException
         from cassandra.cluster import NoHostAvailable
         from cassandra.io import asyncioreactor
@@ -113,11 +114,17 @@ class CassandraStorage(object):
             token = contact_params.token
             background_token = None
 
-        PushTokens.create(username=username, domain=domain, device_id=contact_params.device_id,
-                          device_token=token, background_token=background_token, platform=contact_params.platform,
-                          silent=str(int(contact_params.silent is True)), app_id=contact_params.app_id,
-                          user_agent=contact_params.user_agent)
-        OpenSips.create(opensipskey=account, opensipsval='1')
+        try:
+            PushTokens.create(username=username, domain=domain, device_id=contact_params.device_id,
+                              device_token=token, background_token=background_token, platform=contact_params.platform,
+                              silent=str(int(contact_params.silent is True)), app_id=contact_params.app_id,
+                              user_agent=contact_params.user_agent)
+        except InvalidRequest as e:
+            log_event(loggers=settings.params.loggers, msg=f'Storing token failed: {e}', level='error')
+        try:
+            OpenSips.create(opensipskey=account, opensipsval='1')
+        except InvalidRequest as e:
+            log_event(loggers=settings.params.loggers, msg=e, level='error')
 
     def remove(self, account, device):
         username, domain = account.split('@', 1)
