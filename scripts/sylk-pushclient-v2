@@ -17,7 +17,7 @@ from argparse import ArgumentParser
 if __name__ == '__main__':
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(dest='action')
-    parser.add_argument('--url', dest='url', required=True, help='Base push URL')
+    parser.add_argument('--url', dest='url', required=False, default='http://localhost:8400', help='Base push URL')
     parser.add_argument('--account', dest='account', required=True, help='Account')
     
     subparserA = subparsers.add_parser('push', help='Send push request')
