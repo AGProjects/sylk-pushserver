@@ -73,8 +73,7 @@ if __name__ == '__main__':
         token = token2 if (token2 and options.event == 'cancel') else token1
     except NameError:
         pass
-    
-    print("Using API v2")
+
     if options.url[-1] == '/':
         options.url=options.url[:-1]
 
@@ -105,10 +104,11 @@ if __name__ == '__main__':
         else:
             return requests.post(*args, **kwargs)
 
+    action = options.action.title()
     try:
         r = getMethod(url, timeout=5, json=log_params)
         if r.status_code == 200:
-            print("%s to %s response 200 OK: %s" % (options.action, url, r.text))
+            print("%s request to %s - 200 OK: %s" % (action, url, r.text))
             body = r.json()
             try:
                 failure = body['data']['body']['_content']['failure']
@@ -128,8 +128,8 @@ if __name__ == '__main__':
 
             sys.exit(0)
         else:
-            print("%s to %s failed: %d: %s" % (options.action, url, r.status_code, r.text))
+            print("%s request to %s failed: %d: %s" % (action, url, r.status_code, r.text))
             sys.exit(1)
     except Exception as e:
-        print("%s to %s failed: connection error" % (options.action, url))
+        print("%s request to %s failed: connection error" % (action, url))
         sys.exit(1)
