@@ -51,14 +51,6 @@ if __name__ == '__main__':
         pass
 
     try:
-        (token1, token2) = options.device_token.split("#")
-    except ValueError:
-        token1 = options.device_token
-        token2 = None
-    except AttributeError:
-        pass
-
-    try:
         media_type = options.media_type
 
         if ("video" in options.media_type):
@@ -69,11 +61,6 @@ if __name__ == '__main__':
         pass
 
 
-    try:
-        token = token2 if (token2 and options.event == 'cancel') else token1
-    except NameError:
-        pass
-
     if options.url[-1] == '/':
         options.url=options.url[:-1]
 
@@ -82,7 +69,7 @@ if __name__ == '__main__':
     if options.action == 'add':
         log_params = {'platform': options.platform,
                       'app-id': options.appid,
-                      'token': token,
+                      'token': options.device_token,
                       'device-id': options.device_id,
                       'silent': options.silent,
                       'user-agent': options.user_agent}
