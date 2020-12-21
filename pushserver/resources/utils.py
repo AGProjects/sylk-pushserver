@@ -245,7 +245,6 @@ def log_add_request(task: str, host: str, loggers: dict,
     elif task == 'log_failure':
         level = 'error'
         resp = error_msg
-        print(resp)
         msg = f'{host} - Add Token Failed - Response {request_id}: ' \
               f'{resp}'
         log_event(loggers=loggers, msg=msg, level=level)
