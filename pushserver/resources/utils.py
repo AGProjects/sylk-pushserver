@@ -231,13 +231,13 @@ def log_add_request(task: str, host: str, loggers: dict,
     if task == 'log_request':
         payload = fix_payload(body)
         level = 'info'
-        msg = f'{host} - Add Token - {request_id}: ' \
+        msg = f'{host} - Add Token - Request [{request_id}]: ' \
                 f'{payload}'
         log_event(msg=msg, level=level, loggers=loggers)
 
     elif task == 'log_success':
         payload = fix_payload(body)
-        msg = f'{host} - Add Token - Response {request_id}: ' \
+        msg = f'{host} - Add Token - Response [{request_id}]: ' \
               f'{payload}'
         level = 'info'
         log_event(msg=msg, level=level, loggers=loggers)
@@ -245,7 +245,7 @@ def log_add_request(task: str, host: str, loggers: dict,
     elif task == 'log_failure':
         level = 'error'
         resp = error_msg
-        msg = f'{host} - Add Token Failed - Response {request_id}: ' \
+        msg = f'{host} - Add Token Failed - Response [{request_id}]: ' \
               f'{resp}'
         log_event(loggers=loggers, msg=msg, level=level)
 
@@ -266,13 +266,13 @@ def log_remove_request(task: str, host: str, loggers: dict,
     if task == 'log_request':
         payload = fix_payload(body)
         level = 'info'
-        msg = f'{host} - Remove Token - {request_id}: ' \
+        msg = f'{host} - Remove Token - Request [{request_id}]: ' \
               f'{payload}'
         log_event(msg=msg, level=level, loggers=loggers)
 
     elif task == 'log_success':
         payload = fix_payload(body)
-        msg = f'{host} - Remove Token - Response {request_id}: ' \
+        msg = f'{host} - Remove Token - Response [{request_id}]: ' \
               f'{payload}'
         level = 'info'
         log_event(msg=msg, level=level, loggers=loggers)
@@ -304,7 +304,7 @@ def log_push_request(task: str, host: str, loggers: dict,
     if task == 'log_request':
         payload = fix_payload(body)
         level = 'info'
-        msg = f'{host} - Push - {request_id}: ' \
+        msg = f'{host} - Push - Request [{request_id}]: ' \
               f'{event} for {sip_to} ' \
               f': {payload}'
         log_event(msg=msg, level=level, loggers=loggers)
@@ -312,7 +312,7 @@ def log_push_request(task: str, host: str, loggers: dict,
     elif task == 'log_failure':
         level = 'error'
         resp = error_msg
-        msg = f'{host} - Push Failed - Response {request_id}: ' \
+        msg = f'{host} - Push Failed - Response [{request_id}]: ' \
               f'{resp}'
         log_event(loggers=loggers, msg=msg, level=level)
 
