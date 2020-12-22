@@ -13,6 +13,7 @@ async def validation_exception_handler(request: Request,
                                        exc: Union[RequestValidationError,
                                                   ValidationError]) -> JSONResponse:
     host, port = request.scope['client'][0], request.scope['client'][1]
+    account = None
     error_msg = None
     code = 400
     status_code = status.HTTP_400_BAD_REQUEST
@@ -33,7 +34,13 @@ async def validation_exception_handler(request: Request,
                      f"{exc.body['app-id']}-" \
                      f"{exc.body['call-id']}"
     except (KeyError, TypeError):
-        request_id = "unknown"
+        try:
+            account = request['path_params']['account']
+            request_id = f"{account}-" \
+                         f"{exc.body['app-id']}-" \
+                         f"{exc.body['device-id']}"
+        except (KeyError, TypeError):
+            request_id = "unknown"
 
     pick_log_function(exc, task='log_request', host=host,
                       loggers=settings.params.loggers,
