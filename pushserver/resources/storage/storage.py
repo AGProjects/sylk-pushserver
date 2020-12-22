@@ -137,7 +137,6 @@ class CassandraStorage(object):
     def remove(self, account, device):
         username, domain = account.split('@', 1)
         app_id, device_id = device.split('-', 1)
-        print(device)
         try:
             PushTokens.objects(PushTokens.username == username, PushTokens.domain == domain, PushTokens.device_id == device_id, PushTokens.app_id == app_id).if_exists().delete()
         except LWTException:

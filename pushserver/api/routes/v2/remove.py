@@ -50,7 +50,6 @@ async def remove_requests(account: str,
                                 request_id=request_id, body=rm_request.__dict__,
                                 error_msg=f'500: {{\"detail\": \"{error.detail}\"}}')
                 raise error
-            print(storage_data)
             if not storage_data:
                 log_remove_request(task='log_failure',
                                    host=host, loggers=settings.params.loggers,
