@@ -1,6 +1,6 @@
 import json
 
-from fastapi import APIRouter, BackgroundTasks, Request, status
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
 from fastapi.encoders import jsonable_encoder
@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from pushserver.models.requests import WakeUpRequest, PushRequest
 from pushserver.resources import settings
 from pushserver.resources.storage import TokenStorage
+from pushserver.resources.storage.errors import StorageError
 from pushserver.resources.notification import handle_request
 from pushserver.resources.utils import (check_host,
                                         log_event, log_incoming_request, log_push_request)
@@ -55,7 +56,15 @@ async def push_requests(account: str,
 
         else:
             storage = TokenStorage()
-            storage_data = storage[account]
+            try:
+                storage_data = storage[account]
+            except StorageError:
+                error = HTTPException(status_code=500, detail="Internal error: storage")
+                log_remove_request(task='log_failure',
+                                host=host, loggers=settings.params.loggers,
+                                request_id=request_id, body=push_request.__dict__,
+                                error_msg=f'500: {{\"detail\": \"{error.detail}\"}}')
+                raise error
             expired_devices = []
 
             log_push_request(task='log_request',

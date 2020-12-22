@@ -1,9 +1,10 @@
-from fastapi import APIRouter, BackgroundTasks, Request
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from pushserver.models.requests import AddRequest, fix_platform_name, AddResponse
 from pushserver.resources import settings
 from pushserver.resources.storage import TokenStorage
+from pushserver.resources.storage.errors import StorageError
 from pushserver.resources.utils import (check_host,
                                         log_event, log_add_request)
 
@@ -42,11 +43,20 @@ async def add_requests(account: str,
                             host=host, loggers=settings.params.loggers,
                             request_id=request_id, body=add_request.__dict__)
 
+            storage = TokenStorage()
+            try:
+                storage.add(account, add_request)
+            except StorageError:
+                error = HTTPException(status_code=500, detail="Internal error: storage")
+                log_add_request(task='log_failure',
+                                host=host, loggers=settings.params.loggers,
+                                request_id=request_id, body=add_request.__dict__,
+                                error_msg=f'500: {{\"detail\": \"{error.detail}\"}}')
+                raise error
+
             log_add_request(task='log_success',
                             host=host, loggers=settings.params.loggers,
                             request_id=request_id, body=add_request.__dict__)
-            storage = TokenStorage()
-            storage.add(account, add_request)
             return add_request
     else:
         msg = f'incoming request from {host} is denied'
