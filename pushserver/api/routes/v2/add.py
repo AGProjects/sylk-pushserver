@@ -23,8 +23,7 @@ async def add_requests(account: str,
     code, description, data = '', '', {}
 
     if check_host(host, settings.params.allowed_pool):
-        request_id = f"{add_request.app_id}-{add_request.device_id}"
-
+        request_id = f"{account}-{add_request.app_id}-{add_request.device_id}"
         if not settings.params.return_async:
             background_tasks.add_task(log_add_request, task='log_request',
                                       host=host, loggers=settings.params.loggers,

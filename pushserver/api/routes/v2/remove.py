@@ -21,7 +21,7 @@ async def remove_requests(account: str,
     code, description, data = '', '', {}
 
     if check_host(host, settings.params.allowed_pool):
-        request_id = f"{rm_request.device_id}-{rm_request.app_id}"
+        request_id = f"{account}-{rm_request.app_id}-{rm_request.device_id}"
 
         if not settings.params.return_async:
             background_tasks.add_task(log_remove_request, task='log_request',
@@ -64,7 +64,8 @@ async def remove_requests(account: str,
                     content={'result': 'Not found'}
                 )
             else:
-                storage.remove(account, request_id)
+                device = f"{rm_request.app_id}-{rm_request.device_id}"
+                storage.remove(account, device)
                 log_remove_request(task='log_success',
                                    host=host, loggers=settings.params.loggers,
                                    request_id=request_id, body=rm_request.__dict__)
