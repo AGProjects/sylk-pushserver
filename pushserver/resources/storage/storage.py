@@ -12,9 +12,10 @@ from pushserver.resources import settings
 from pushserver.resources.utils import log_event
 
 from .configuration import CassandraConfig, ServerConfig
+from .errors import StorageError
 
 
-__all__ = 'TokenStorage',
+__all__ = 'TokenStorage'
 
 
 CASSANDRA_MODULES_AVAILABLE = False
@@ -30,6 +31,7 @@ else:
     else:
         CASSANDRA_MODULES_AVAILABLE = True
         from cassandra import InvalidRequest
+        from cassandra.cqlengine import CQLEngineException
         from cassandra.cqlengine.query import LWTException
         from cassandra.cluster import NoHostAvailable
         from cassandra.io import asyncioreactor
@@ -99,10 +101,14 @@ class CassandraStorage(object):
         def query_tokens(key):
             username, domain = key.split('@', 1)
             tokens = {}
-            for device in PushTokens.objects(PushTokens.username == username, PushTokens.domain == domain):
-                tokens[f'{device.device_id}-{device.app_id}'] = {'device_id': device.device_id, 'token': device.device_token,
-                                                                 'platform': device.platform, 'app_id': device.app_id,
-                                                                 'silent': bool(int(device.silent))}
+            try:
+                for device in PushTokens.objects(PushTokens.username == username, PushTokens.domain == domain):
+                    tokens[f'{device.device_id}-{device.app_id}'] = {'device_id': device.device_id, 'token': device.device_token,
+                                                                     'platform': device.platform, 'app_id': device.app_id,
+                                                                     'silent': bool(int(device.silent))}
+            except CQLEngineException as e:
+                log_event(loggers=settings.params.loggers, msg=f'Get token(s) failed: {e}', level='error')
+                raise StorageError
             return tokens
         return query_tokens(key)
 
@@ -119,12 +125,14 @@ class CassandraStorage(object):
                               device_token=token, background_token=background_token, platform=contact_params.platform,
                               silent=str(int(contact_params.silent is True)), app_id=contact_params.app_id,
                               user_agent=contact_params.user_agent)
-        except InvalidRequest as e:
+        except (CQLEngineException, InvalidRequest) as e:
             log_event(loggers=settings.params.loggers, msg=f'Storing token failed: {e}', level='error')
+            raise StorageError
         try:
             OpenSips.create(opensipskey=account, opensipsval='1')
-        except InvalidRequest as e:
+        except (CQLEngineException, InvalidRequest) as e:
             log_event(loggers=settings.params.loggers, msg=e, level='error')
+            raise StorageError
 
     def remove(self, account, device):
         username, domain = account.split('@', 1)
