@@ -1,9 +1,10 @@
-from fastapi import APIRouter, BackgroundTasks, Request, status
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
 from pushserver.models.requests import RemoveRequest, RemoveResponse
 from pushserver.resources import settings
 from pushserver.resources.storage import TokenStorage
+from pushserver.resources.storage.errors import StorageError
 from pushserver.resources.utils import (check_host,
                                         log_event, log_remove_request)
 
@@ -40,7 +41,15 @@ async def remove_requests(account: str,
                                request_id=request_id, body=rm_request.__dict__)
 
             storage = TokenStorage()
-            storage_data = storage[account]
+            try:
+                storage_data = storage[account]
+            except StorageError:
+                error = HTTPException(status_code=500, detail="Internal error: storage")
+                log_remove_request(task='log_failure',
+                                host=host, loggers=settings.params.loggers,
+                                request_id=request_id, body=rm_request.__dict__,
+                                error_msg=f'500: {{\"detail\": \"{error.detail}\"}}')
+                raise error
             print(storage_data)
             if not storage_data:
                 log_remove_request(task='log_failure',
