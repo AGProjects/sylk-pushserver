@@ -62,7 +62,7 @@ class AddRequest(BaseModel):
         platform = fix_platform_name(platform)
 
         if platform not in ('firebase', 'apple'):
-            raise ValueError(f"'{platform}' platform is not configured")
+            raise ValueError(f"The '{platform}' platform is not configured")
 
         pns_register = settings.params.pns_register
 
