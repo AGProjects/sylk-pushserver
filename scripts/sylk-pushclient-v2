@@ -27,6 +27,7 @@ if __name__ == '__main__':
     subparserA.add_argument('--from', dest='from_uri', required=True, help='From')
     subparserA.add_argument('--from_name', dest='from_name', required=False, help='From name')
     subparserA.add_argument('--to', dest='to_uri', required=True, help='To')
+    subparserA.add_argument('--reason', dest='reason', required=False, help='Reason')
     
     subparserB = subparsers.add_parser('add', help='Add a push token')
     subparserB.add_argument('--platform', dest='platform', help='Platform')
@@ -82,7 +83,9 @@ if __name__ == '__main__':
                       'from': from_uri,
                       'from-display-name': from_name or from_uri,
                       'to': options.to_uri,
-                      'call-id': options.call_id}
+                      'call-id': options.call_id
+                      'reason': options.reason}
+
         url = '{}/{}/{}/push'.format(options.url, 'v2/tokens', options.account)
 
     def getMethod(*args, **kwargs):
@@ -111,7 +114,7 @@ if __name__ == '__main__':
                         #    cur = con.cursor()
                         #    cur.execute(q)
             except KeyError:
-                pass 
+                pass
 
             sys.exit(0)
         else:
