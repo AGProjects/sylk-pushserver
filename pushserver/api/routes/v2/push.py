@@ -89,6 +89,10 @@ async def push_requests(account: str,
                         item = item.replace('_', '-')
                     reversed_push_parameters[item] = value
 
+                # Use background_token for cancel
+                if push_parameters['event'] == 'cancel' and push_parameters['background_token'] is not None:
+                    reversed_push_parameters['token'] = push_parameters['background_token']
+
                 try:
                     wp = WakeUpRequest(**reversed_push_parameters)
                 except ValidationError as e:
