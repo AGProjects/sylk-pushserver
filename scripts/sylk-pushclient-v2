@@ -83,7 +83,7 @@ if __name__ == '__main__':
                       'from': from_uri,
                       'from-display-name': from_name or from_uri,
                       'to': options.to_uri,
-                      'call-id': options.call_id
+                      'call-id': options.call_id,
                       'reason': options.reason}
 
         url = '{}/{}/{}/push'.format(options.url, 'v2/tokens', options.account)
