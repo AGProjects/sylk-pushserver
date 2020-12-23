@@ -104,8 +104,8 @@ class CassandraStorage(object):
             try:
                 for device in PushTokens.objects(PushTokens.username == username, PushTokens.domain == domain):
                     tokens[f'{device.device_id}-{device.app_id}'] = {'device_id': device.device_id, 'token': device.device_token,
-                                                                     'platform': device.platform, 'app_id': device.app_id,
-                                                                     'silent': bool(int(device.silent))}
+                                                                     'background_token': device.background_token, 'platform': device.platform,
+                                                                     'app_id': device.app_id, 'silent': bool(int(device.silent))}
             except CQLEngineException as e:
                 log_event(loggers=settings.params.loggers, msg=f'Get token(s) failed: {e}', level='error')
                 raise StorageError
