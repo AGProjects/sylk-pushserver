@@ -32,8 +32,7 @@ async def remove_requests(account: str,
                                       host=host, loggers=settings.params.loggers,
                                       request_id=request_id, body=rm_request.__dict__)
             storage = TokenStorage()
-            background_tasks.add_task(storage.remove, account, request_id)
-
+            background_tasks.add_task(storage.remove, account, rm_request.app_id, rm_request.device_id)
             return rm_request
         else:
             log_remove_request(task='log_request',
@@ -60,8 +59,9 @@ async def remove_requests(account: str,
                     content={'result': 'User not found'}
                 )
 
+            device_id = f"{rm_request.app_id}-{rm_request.device_id}"
             try:
-                device = storage_data[request_id]
+                device = storage_data[device_id]
             except KeyError:
                 log_remove_request(task='log_failure',
                                    host=host, loggers=settings.params.loggers,
@@ -72,8 +72,7 @@ async def remove_requests(account: str,
                     content={'result': 'Not found'}
                 )
             else:
-                device = f"{rm_request.app_id}-{rm_request.device_id}"
-                storage.remove(account, device)
+                storage.remove(account, rm_request.app_id, rm_request.device_id)
                 log_remove_request(task='log_success',
                                    host=host, loggers=settings.params.loggers,
                                    request_id=request_id, body=rm_request.__dict__)

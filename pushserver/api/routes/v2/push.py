@@ -115,16 +115,16 @@ async def push_requests(account: str,
 
                 code = results.get('code')
                 if code == 410:
-                   expired_devices.append(device)
-                   code = 200
+                    expired_devices.append((push_parameters['app_id'], push_parameters['device_id']))
+                    code = 200
                 description = 'push notification responses'
                 data.append(results)
 
-            for device in expired_devices:
-                msg = f'Removing {device} from {account}'
+            for expired_device in expired_devices:
+                msg = f'Removing {expired_device[1]} from {account}'
                 log_event(loggers=settings.params.loggers,
-                          msg=msg, level='deb')
-                storage.remove(account, device)
+                          msg=msg, level='info')
+                storage.remove(account, *expired_device)
 
     else:
         msg = f'incoming request from {host} is denied'
