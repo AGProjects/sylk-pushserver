@@ -81,9 +81,10 @@ class FileStorage(object):
             self._tokens[account] = {key: data}
         self._save()
 
-    def remove(self, account, device):
+    def remove(self, account, app_id, device_id):
+        key = f'{app_id}-{device_id}'
         try:
-            del self._tokens[account][device]
+            del self._tokens[account][key]
         except KeyError:
             pass
         self._save()
@@ -103,7 +104,7 @@ class CassandraStorage(object):
             tokens = {}
             try:
                 for device in PushTokens.objects(PushTokens.username == username, PushTokens.domain == domain):
-                    tokens[f'{device.device_id}-{device.app_id}'] = {'device_id': device.device_id, 'token': device.device_token,
+                    tokens[f'{device.app_id}-{device.device_id}'] = {'device_id': device.device_id, 'token': device.device_token,
                                                                      'background_token': device.background_token, 'platform': device.platform,
                                                                      'app_id': device.app_id, 'silent': bool(int(device.silent))}
             except CQLEngineException as e:
@@ -134,9 +135,8 @@ class CassandraStorage(object):
             log_event(loggers=settings.params.loggers, msg=e, level='error')
             raise StorageError
 
-    def remove(self, account, device):
+    def remove(self, account, app_id, device_id):
         username, domain = account.split('@', 1)
-        app_id, device_id = device.split('-', 1)
         try:
             PushTokens.objects(PushTokens.username == username, PushTokens.domain == domain, PushTokens.device_id == device_id, PushTokens.app_id == app_id).if_exists().delete()
         except LWTException:
