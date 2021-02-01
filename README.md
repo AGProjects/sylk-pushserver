@@ -156,17 +156,26 @@ and values as in API version 1. The API has the following methods:
 
 ```
 {
-    "app-id": "string",
-    "platform": "string",
     "event": "string",
-    "token": "string",
-    "device-id": "string",
     "call-id": "string",
     "from": "string",
     "from-display-name": "string",
     "to": "string",
     "media-type": "string",
-    "silent": true,
+    "reason": "string"
+}
+```
+
+**POST** `/v2/tokens/{account}/push/{device}` - Sends a push notification for `{account}` and `{device}`
+
+```
+{
+    "event": "string",
+    "call-id": "string",
+    "from": "string",
+    "from-display-name": "string",
+    "to": "string",
+    "media-type": "string",
     "reason": "string"
 }
 ```
