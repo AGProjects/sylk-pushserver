@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import ValidationError
+from typing import Optional
 
 from pushserver.models.requests import WakeUpRequest, PushRequest
 from pushserver.resources import settings
@@ -18,10 +19,12 @@ router = APIRouter()
 
 
 @router.post('/{account}/push', response_model=PushRequest)
+@router.post('/{account}/push/{device}', response_model=PushRequest)
 async def push_requests(account: str,
                         request: Request,
                         push_request: PushRequest,
-                        background_tasks: BackgroundTasks):
+                        background_tasks: BackgroundTasks,
+                        device: Optional[str] = None):
 
     host, port = request.client.host, request.client.port
 
@@ -60,7 +63,7 @@ async def push_requests(account: str,
                 storage_data = storage[account]
             except StorageError:
                 error = HTTPException(status_code=500, detail="Internal error: storage")
-                log_remove_request(task='log_failure',
+                log_push_request(task='log_failure',
                                 host=host, loggers=settings.params.loggers,
                                 request_id=request_id, body=push_request.__dict__,
                                 error_msg=f'500: {{\"detail\": \"{error.detail}\"}}')
@@ -77,7 +80,10 @@ async def push_requests(account: str,
                                              'description': description,
                                              'data': data})
 
-            for device, push_parameters in storage_data.items():
+            for device_key, push_parameters in storage_data.items():
+                if device is not None and device != push_parameters['device_id']:
+                    continue
+
                 push_parameters.update(push_request.__dict__)
 
                 reversed_push_parameters = {}
@@ -125,6 +131,18 @@ async def push_requests(account: str,
                 log_event(loggers=settings.params.loggers,
                           msg=msg, level='info')
                 storage.remove(account, *expired_device)
+
+        if code == '':
+            description, data = 'Push request was not sent: device not found', {"device_id": push_parameters['device_id']}
+            content = { 'code': 404,
+                       'description': description,
+                       'data': data}
+            log_push_request(task='log_failure',
+                             host=host, loggers=settings.params.loggers,
+                             request_id=request_id, body=push_request.__dict__,
+                             error_msg=f'{content}')
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
+                                content=content)
 
     else:
         msg = f'incoming request from {host} is denied'

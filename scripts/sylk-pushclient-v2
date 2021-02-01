@@ -28,7 +28,8 @@ if __name__ == '__main__':
     subparserA.add_argument('--from_name', dest='from_name', required=False, help='From name')
     subparserA.add_argument('--to', dest='to_uri', required=True, help='To')
     subparserA.add_argument('--reason', dest='reason', required=False, help='Reason')
-    
+    subparserA.add_argument('--deviceid', dest='device_id', default=None, required=False, help='Device Id/Sip instance')
+
     subparserB = subparsers.add_parser('add', help='Add a push token')
     subparserB.add_argument('--platform', dest='platform', help='Platform')
     subparserB.add_argument('--appid', dest='appid', required=True, help='App ID')
@@ -85,8 +86,10 @@ if __name__ == '__main__':
                       'to': options.to_uri,
                       'call-id': options.call_id,
                       'reason': options.reason}
-
-        url = '{}/{}/{}/push'.format(options.url, 'v2/tokens', options.account)
+        if options.device_id is None:
+            url = '{}/{}/{}/push'.format(options.url, 'v2/tokens', options.account)
+        else:
+            url = '{}/{}/{}/push/{}'.format(options.url, 'v2/tokens', options.account, options.device_id)
 
     def getMethod(*args, **kwargs):
         if options.action == 'remove':
