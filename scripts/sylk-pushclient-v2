@@ -99,20 +99,25 @@ if __name__ == '__main__':
         r = getMethod(url, timeout=5, json=log_params)
         if r.status_code == 200:
             print("%s request to %s - 200 OK: %s" % (action, url, r.text))
+            sys.exit(0)
+        elif r.status_code == 410:
+            print("%s request to %s - 410: %s" % (action, url, r.text))
             body = r.json()
             try:
-                failure = body['data']['body']['_content']['failure']
-                if failure == 1:
-                    # A push client may want to act based on various response codes
-                    # https://firebase.google.com/docs/cloud-messaging/http-server-ref#error-codes
-                    reason = body['data']['body']['_content']['results'][0]['error']
-                    if reason == 'NotRegistered':
-                        log.info("Token %s must be purged" % token)
-                        #q = "delete from push_tokens where token = '%s'" % token   
-                        #con = pymysql.connect('localhost', 'opensips', 'XYZ', 'opensips')
-                        #with con: 
-                        #    cur = con.cursor()
-                        #    cur.execute(q)
+                for result in body['data']:
+
+                    failure = result['body']['_content']['failure']
+                    if failure == 1:
+                        # A push client may want to act based on various response codes
+                        # https://firebase.google.com/docs/cloud-messaging/http-server-ref#error-codes
+                        reason = result['body']['_content']['results'][0]['error']
+                        if reason == 'NotRegistered':
+                            log.info("Token %s must be purged" % token)
+                            #q = "delete from push_tokens where token = '%s'" % token   
+                            #con = pymysql.connect('localhost', 'opensips', 'XYZ', 'opensips')
+                            #with con: 
+                            #    cur = con.cursor()
+                            #    cur.execute(q)
             except KeyError:
                 pass
 
