@@ -13,9 +13,87 @@ from pushserver.resources.storage import TokenStorage
 from pushserver.resources.storage.errors import StorageError
 from pushserver.resources.notification import handle_request
 from pushserver.resources.utils import (check_host,
-                                        log_event, log_incoming_request, log_push_request)
+                                        log_event, log_incoming_request,
+                                        log_push_request)
 
 router = APIRouter()
+
+async def task_push(account: str,
+                    push_request: PushRequest,
+                    request_id: str,
+                    host: str,
+                    device: Optional[str] = None):
+
+    code, description, data = '', '' , []
+    storage = TokenStorage()
+    try:
+        storage_data = storage[account]
+    except StorageError:
+        log_remove_request(task='log_failure',
+                           host=host, loggers=settings.params.loggers,
+                           request_id=request_id, body=push_request.__dict__,
+                           error_msg=f'500: {{\"detail\": \"{error.detail}\"}}')
+        return
+    expired_devices = []
+
+    if not storage_data:
+        # Push request was not sent: user not found
+        return
+
+    for device_key, push_parameters in storage_data.items():
+        if device is not None and device != push_parameters['device_id']:
+            continue
+
+        push_parameters.update(push_request.__dict__)
+
+        reversed_push_parameters = {}
+        for item in push_parameters.keys():
+            value = push_parameters[item]
+            if item in ('sip_to', 'sip_from'):
+                item = item.split('_')[1]
+            else:
+                item = item.replace('_', '-')
+            reversed_push_parameters[item] = value
+
+        # Use background_token for cancel
+        if push_parameters['event'] == 'cancel' and push_parameters['background_token'] is not None:
+            reversed_push_parameters['token'] = push_parameters['background_token']
+
+        try:
+            wp = WakeUpRequest(**reversed_push_parameters)
+        except ValidationError as e:
+            error_msg = e.errors()[0]['msg']
+            log_push_request(task='log_failure', host=host,
+                                loggers=settings.params.loggers,
+                                request_id=request_id, body=push_request.__dict__,
+                                error_msg=error_msg)
+            return
+
+        log_incoming_request(task='log_success',
+                                host=host, loggers=settings.params.loggers,
+                                request_id=request_id, body=wp.__dict__)
+        results = handle_request(wp, request_id=request_id)
+
+        code = results.get('code')
+        if code == 410:
+            expired_devices.append((push_parameters.app_id, push_parameters.device_id))
+            code = 200
+        description = 'push notification responses'
+        data.append(results)
+
+    for device in expired_devices:
+        msg = f'Removing {device[1]} from {account}'
+        log_event(loggers=settings.params.loggers,
+                    msg=msg, level='deb')
+        storage.remove(account, *device)
+
+    if code == '':
+        description, data = 'Push request was not sent: device not found', {"device_id": push_parameters['device_id']}
+        log_event(loggers=settings.params.loggers,
+                  msg=f'{description} {data}', level='warn')
+    else:
+        log_event(loggers=settings.params.loggers,
+                  msg=f'{description} {data}', level='deb')
 
 
 @router.post('/{account}/push', response_model=PushRequest)
@@ -40,9 +118,12 @@ async def push_requests(account: str,
             background_tasks.add_task(log_incoming_request, task='log_success',
                                       host=host, loggers=settings.params.loggers,
                                       request_id=request_id, body=push_request.__dict__)
-            background_tasks.add_task(handle_request,
-                                      wp_request=push_request,
-                                      request_id=request_id)
+            background_tasks.add_task(task_push,
+                                      account=account,
+                                      push_request=push_request,
+                                      request_id=request_id,
+                                      host=host,
+                                      device=device)
             status_code, code = status.HTTP_202_ACCEPTED, 202
             description, data = 'accepted for delivery', {}
 
