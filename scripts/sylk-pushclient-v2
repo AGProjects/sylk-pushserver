@@ -100,11 +100,10 @@ if __name__ == '__main__':
     action = options.action.title()
     try:
         r = getMethod(url, timeout=5, json=log_params)
-        if r.status_code == 200:
-            print("%s request to %s - 200 OK: %s" % (action, url, r.text))
+        print("%s request to %s - %s: %s" % (action, url, r.status_code, r.text))
+        if r.status_code >= 200 and r.status_code < 300:
             sys.exit(0)
         elif r.status_code == 410:
-            print("%s request to %s - 410: %s" % (action, url, r.text))
             body = r.json()
             try:
                 for result in body['data']:
