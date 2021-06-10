@@ -1,4 +1,4 @@
-fastapi == 0.52.0
+fastapi == 0.65.2
 hyper >= 0.7.0
 pydantic >= 1.4
 pyinotify >= 0.9.6
