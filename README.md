@@ -209,7 +209,7 @@ sudo apt-key add agp-debian-gpg.key
 
 Add these repository matching your distribution to /etc/apt/sources.list:
 
-http://projects.ag-projects.com/projects/documentation/wiki/Repositories
+https://docs-new.sipthor.net/w/debian_package_repositories/
 
 Update the list of available packages:
 
@@ -320,7 +320,7 @@ overwrite its functions.
 In `applications.ini` file set app_type for the custom applications:
 
 ```
-`app_type` = *myapp* 
+`app_type` = *myapp*
 ```
 
 ## Custom Push services
@@ -336,7 +336,7 @@ Copy config/pns/mypns.py to the extra_pns dir and overwrite its classes.
 In `applications.ini` file set app_type for the custom applications:
 
 ```
-`app_platform` = *mypns* 
+`app_platform` = *mypns*
 ```
 
 
