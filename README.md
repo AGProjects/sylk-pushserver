@@ -197,6 +197,37 @@ links may change:
  * [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging)
  * [FCM migration from legacy HTTP to HTTP v1](https://firebase.google.com/docs/cloud-messaging/migrate-v1)
 
+
+### Apple Certificate
+
+Go to Apple developer website
+
+https://developer.apple.com/account/resources/identifiers/list
+
+Go to Identifiers section
+
+Select the app id
+
+Scroll down to Push notifications
+
+Click Configure
+
+Generate a certificate. 
+
+Export the certificate to pk12 format from Keychain.
+
+Convert the cartificate and private key to .pem format:
+
+openssl pkcs12 -in Certificates.p12   -nocerts -out sylk.privateKey.pem
+openssl pkcs12 -in Certificates.p12 -clcerts -nokeys -out sylk.pem
+
+Remove the passcode from the private key:
+
+openssl rsa -in sylk.privateKey.pem -out sylk.key
+
+Use sylk.pem and sylk.key inside applications.ini config file.
+
+
 ## Installation
 
 ### As a Debian package
