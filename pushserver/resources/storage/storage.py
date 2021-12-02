@@ -64,11 +64,13 @@ class FileStorage(object):
             return {}
 
     def add(self, account, contact_params):
-        try:
-            (token, background_token) = contact_params.token.split('#')
-        except ValueError:
-            token = contact_params.token
-            background_token = None
+        token = contact_params.token
+        background_token = None
+        if contact_params.platform == 'apple':
+            try:
+                (token, background_token) = contact_params.token.split('-')
+            except ValueError:
+                pass
 
         data = contact_params.__dict__
         data['token'] = token
