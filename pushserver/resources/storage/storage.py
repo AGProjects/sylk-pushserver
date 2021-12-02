@@ -115,11 +115,14 @@ class CassandraStorage(object):
 
     def add(self, account, contact_params):
         username, domain = account.split('@', 1)
-        try:
-            (token, background_token) = contact_params.token.split('#')
-        except ValueError:
-            token = contact_params.token
-            background_token = None
+
+        token = contact_params.token
+        background_token = None
+        if contact_params.platform == 'apple':
+            try:
+                (token, background_token) = contact_params.token.split('-')
+            except ValueError:
+                pass
 
         try:
             PushTokens.create(username=username, domain=domain, device_id=contact_params.device_id,
