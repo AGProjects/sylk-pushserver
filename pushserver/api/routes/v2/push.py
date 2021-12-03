@@ -18,21 +18,22 @@ from pushserver.resources.utils import (check_host,
 
 router = APIRouter()
 
+
 async def task_push(account: str,
                     push_request: PushRequest,
                     request_id: str,
                     host: str,
                     device: Optional[str] = None):
 
-    code, description, data = '', '' , []
+    code, description, data = '', '', []
     storage = TokenStorage()
     try:
         storage_data = storage[account]
     except StorageError:
-        log_remove_request(task='log_failure',
-                           host=host, loggers=settings.params.loggers,
-                           request_id=request_id, body=push_request.__dict__,
-                           error_msg=f'500: {{\"detail\": \"{error.detail}\"}}')
+        log_push_request(task='log_failure',
+                         host=host, loggers=settings.params.loggers,
+                         request_id=request_id, body=push_request.__dict__,
+                         error_msg=f'500: {{\"detail\": \"{error.detail}\"}}')
         return
     expired_devices = []
 
@@ -64,14 +65,14 @@ async def task_push(account: str,
         except ValidationError as e:
             error_msg = e.errors()[0]['msg']
             log_push_request(task='log_failure', host=host,
-                                loggers=settings.params.loggers,
-                                request_id=request_id, body=push_request.__dict__,
-                                error_msg=error_msg)
+                             loggers=settings.params.loggers,
+                             request_id=request_id, body=push_request.__dict__,
+                             error_msg=error_msg)
             return
 
         log_incoming_request(task='log_success',
-                                host=host, loggers=settings.params.loggers,
-                                request_id=request_id, body=wp.__dict__)
+                             host=host, loggers=settings.params.loggers,
+                             request_id=request_id, body=wp.__dict__)
         results = handle_request(wp, request_id=request_id)
 
         code = results.get('code')
@@ -84,7 +85,7 @@ async def task_push(account: str,
     for device in expired_devices:
         msg = f'Removing {device[1]} from {account}'
         log_event(loggers=settings.params.loggers,
-                    msg=msg, level='deb')
+                  msg=msg, level='deb')
         storage.remove(account, *device)
 
     if code == '':
@@ -145,9 +146,9 @@ async def push_requests(account: str,
             except StorageError:
                 error = HTTPException(status_code=500, detail="Internal error: storage")
                 log_push_request(task='log_failure',
-                                host=host, loggers=settings.params.loggers,
-                                request_id=request_id, body=push_request.__dict__,
-                                error_msg=f'500: {{\"detail\": \"{error.detail}\"}}')
+                                 host=host, loggers=settings.params.loggers,
+                                 request_id=request_id, body=push_request.__dict__,
+                                 error_msg=f'500: {{\"detail\": \"{error.detail}\"}}')
                 raise error
             expired_devices = []
 
@@ -194,7 +195,6 @@ async def push_requests(account: str,
                     return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST,
                                         content=content)
 
-
                 log_incoming_request(task='log_success',
                                      host=host, loggers=settings.params.loggers,
                                      request_id=request_id, body=wp.__dict__)
@@ -215,7 +215,7 @@ async def push_requests(account: str,
 
         if code == '':
             description, data = 'Push request was not sent: device not found', {"device_id": push_parameters['device_id']}
-            content = { 'code': 404,
+            content = {'code': 404,
                        'description': description,
                        'data': data}
             log_push_request(task='log_failure',
