@@ -3,7 +3,7 @@
 
 [Home page](http://sylkserver.com)
 
-Copyright (C) 2020 AG Projects
+Copyright (C) 2021 AG Projects
 
 Sylk Pushserver was designed to act as a central dispatcher for mobile push
 notifications inside RTC provider infrastructures.  Both the provider and
