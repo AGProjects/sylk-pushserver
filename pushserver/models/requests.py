@@ -55,9 +55,9 @@ class AddRequest(BaseModel):
         app_id, platform = values.get('app-id'), values.get('platform')
 
         if not app_id:
-            raise ValueError(f"Field 'app-id' required")
+            raise ValueError("Field 'app-id' required")
         if not platform:
-            raise ValueError(f"Field 'platform' required")
+            raise ValueError("Field 'platform' required")
 
         platform = fix_platform_name(platform)
 
@@ -104,7 +104,7 @@ class RemoveRequest(BaseModel):
         app_id = values.get('app-id')
 
         if not app_id:
-            raise ValueError(f"Field 'app-id' required")
+            raise ValueError("Field 'app-id' required")
 
         return values
 
@@ -155,9 +155,9 @@ class WakeUpRequest(BaseModel):
         app_id, platform = values.get('app-id'), values.get('platform')
 
         if not app_id:
-            raise ValueError(f"Field 'app-id' required")
+            raise ValueError("Field 'app-id' required")
         if not platform:
-            raise ValueError(f"Field 'platform' required")
+            raise ValueError("Field 'platform' required")
 
         platform = fix_platform_name(platform)
 

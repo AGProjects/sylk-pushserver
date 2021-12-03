@@ -41,7 +41,7 @@ class AppleConn(ApplePNS):
     """
 
     def __init__(self, app_id: str, app_name: str, url_push: str,
-                 voip: bool,  cert_file: str, key_file: str,
+                 voip: bool, cert_file: str, key_file: str,
                  apple_pns: PNS, loggers: dict, port: int = 443):
         """
         :param apple_pns `ApplePNS`: Apple Push Notification Service.
@@ -59,7 +59,6 @@ class AppleConn(ApplePNS):
         self.apple_pns = apple_pns
         self.port = port
         self.loggers = loggers
-
 
     @property
     def ssl_context(self) -> ssl.SSLContext:
@@ -102,11 +101,11 @@ class AppleConn(ApplePNS):
 
         if key_file_name:
             msg = f'{self.app_name.capitalize()} app: Connecting to {host}:{port} ' \
-                    f'using {cert_file_name} certificate ' \
-                    f'and {key_file_name} key files'
+                  f'using {cert_file_name} certificate ' \
+                  f'and {key_file_name} key files'
         else:
             msg = f'{self.app_name.capitalize()} app: Connecting to {host}:{port} ' \
-                    f'using {cert_file_name} certificate'
+                  f'using {cert_file_name} certificate'
 
         log_event(loggers=self.loggers, msg=msg, level='deb')
 
@@ -114,7 +113,7 @@ class AppleConn(ApplePNS):
 
 
 class AppleRegister(PlatformRegister):
-    def __init__(self, app_id: str, app_name:str, voip: bool,
+    def __init__(self, app_id: str, app_name: str, voip: bool,
                  credentials_path: str, config_dict: dict, loggers: dict):
 
         self.app_id = app_id

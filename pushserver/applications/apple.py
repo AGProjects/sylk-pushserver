@@ -14,7 +14,7 @@ class AppleHeaders(object):
         :param event: `str` 'incoming_session', 'incoming_conference' or 'cancel'
         :param token: `str` destination device token.
         :param call_id: `str` unique sip parameter.
-        _param sip_from: `str` SIP URI for who is calling
+        :param sip_from: `str` SIP URI for who is calling
         :param from_display_name: `str` display name of the caller
         :param sip_to: `str` SIP URI for who is called
         :param media_type: `str` 'audio', 'video', 'chat', 'sms' or 'file-transfer'
@@ -74,7 +74,7 @@ class AppleHeaders(object):
         """
         return
 
-    @property 
+    @property
     def headers(self) -> dict:
         """
         Generate apple notification headers

@@ -75,7 +75,7 @@ class AppleSylkPayload(ApplePayload):
     A payload for a Apple Sylk push notification
     """
 
-    @property 
+    @property
     def payload(self) -> str:
         """
         Generate an AppleSylk notification payload

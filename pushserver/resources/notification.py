@@ -62,7 +62,7 @@ class PushNotification(object):
 
         payload_class = self.pns_register[(self.app_id, self.platform)]['payload_class']
         payload_dict = payload_class(*self.args).payload
-        try:      
+        try:
             payload = json.dumps(payload_dict)
         except Exception:
             payload = None

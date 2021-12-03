@@ -37,7 +37,7 @@ class FirebaseHeaders(object):
             self.auth_key = settings.params.pns_register[(self.app_id, 'firebase')]['auth_key']
         except KeyError:
             self.auth_key = None
-            
+
         try:
             self.auth_file = settings.params.pns_register[(self.app_id, 'firebase')]['auth_file']
         except KeyError:
@@ -45,7 +45,7 @@ class FirebaseHeaders(object):
 
     @property
     def access_token(self) -> str:
-        #https://github.com/firebase/quickstart-python/blob/909f39e77395cb0682108184ba565150caa68a31/messaging/messaging.py#L25-L33
+        # https://github.com/firebase/quickstart-python/blob/909f39e77395cb0682108184ba565150caa68a31/messaging/messaging.py#L25-L33
 
         """
         Retrieve a valid access token that can be used to authorize requests.
@@ -59,7 +59,7 @@ class FirebaseHeaders(object):
         except Exception as e:
             self.error = f"Error: cannot generated Firebase access token: {e}"
             return ''
-            
+
     @property
     def headers(self):
         """
@@ -69,7 +69,7 @@ class FirebaseHeaders(object):
         """
         if self.auth_key:
             headers = {'Content-Type': 'application/json',
-                    'Authorization': f"key={self.auth_key}"}
+                       'Authorization': f"key={self.auth_key}"}
         else:
             headers = {
                 'Authorization': f"Bearer {self.access_token}",
@@ -84,13 +84,16 @@ class FirebasePayload(object):
                  call_id: str, sip_from: str, from_display_name: str,
                  sip_to: str, media_type: str, silent: bool, reason: str):
         """
-        :param token: `str` destination device token (required for sylk-apple)
-        :param call_id: `str` unique SIP session id for each call
-        :param event: `str` 'incoming_session', 'incoming_conference', 'cancel'
+        :param app_id: `str` id provided by the mobile application (bundle id)
+        :param event: `str` 'incoming_session', 'incoming_conference', 'cancel' or 'message'
+        :param token: `str` destination device token.
+        :param call_id: `str` unique sip parameter.
+        :param sip_from: `str` SIP URI for who is calling
+        :param from_display_name: `str` display name of the caller
+        :param sip_to: `str` SIP URI for who is called
         :param media_type: `str` 'audio', 'video', 'chat', 'sms' or 'file-transfer'
-        :param sip_from: `str` originator of the sip call.
-        :param from_display_name: `str`
-        :param sip_to: `str` destination uri
+        :param silent: `bool` True for silent notification
+        :param reason: `str` Cancel reason
         """
         self.app_id = app_id
         self.token = token

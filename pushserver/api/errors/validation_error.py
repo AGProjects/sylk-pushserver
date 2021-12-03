@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from pushserver.resources import settings
 from pushserver.resources.utils import pick_log_function
 
+
 async def validation_exception_handler(request: Request,
                                        exc: Union[RequestValidationError,
                                                   ValidationError]) -> JSONResponse:
