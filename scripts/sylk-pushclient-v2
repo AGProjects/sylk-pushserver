@@ -1,15 +1,15 @@
 #!/usr/bin/python
 
-import json
-import logging
+# import json
+# import logging
 import re
 import sys
 import requests
 
-try:
-    import pymysql
-except ImportError:
-    pass
+# try:
+#     import pymysql
+# except ImportError:
+#     pass
 
 from argparse import ArgumentParser
 
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers(dest='action')
     parser.add_argument('--url', dest='url', required=False, default='http://localhost:8400', help='Base push URL')
     parser.add_argument('--account', dest='account', required=True, help='Account')
-    
+
     subparserA = subparsers.add_parser('push', help='Send push request')
     subparserA.add_argument('--mediatype', dest='media_type', default="audio", required=False, help='Audio, Video or Message')
     subparserA.add_argument('--callid', dest='call_id', required=True, help='Call ID')
@@ -63,9 +63,8 @@ if __name__ == '__main__':
     except AttributeError:
         pass
 
-
     if options.url[-1] == '/':
-        options.url=options.url[:-1]
+        options.url = options.url[:-1]
 
     url = '{}/{}/{}'.format(options.url, 'v2/tokens', options.account)
 
@@ -116,10 +115,10 @@ if __name__ == '__main__':
                         # https://firebase.google.com/docs/cloud-messaging/http-server-ref#error-codes
                         reason = result['body']['_content']['results'][0]['error']
                         if reason == 'NotRegistered':
-                            log.info("Token %s must be purged" % token)
-                            #q = "delete from push_tokens where token = '%s'" % token   
-                            #con = pymysql.connect('localhost', 'opensips', 'XYZ', 'opensips')
-                            #with con: 
+                            print("Token %s must be purged" % token)
+                            # q = "delete from push_tokens where token = '%s'" % token   
+                            # con = pymysql.connect('localhost', 'opensips', 'XYZ', 'opensips')
+                            # with con: 
                             #    cur = con.cursor()
                             #    cur.execute(q)
             except KeyError:

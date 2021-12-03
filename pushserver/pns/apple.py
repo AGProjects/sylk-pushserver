@@ -339,9 +339,9 @@ class ApplePushRequest(PushRequest):
             details = self.apple_error_info(reason)
             if details:
                 reason = f'{reason} - {details}'
-                
+
         if status == 400 and 'BadDeviceToken' in reason:
-           status = 410
+            status = 410
 
         results = {'body': body,
                    'code': status,

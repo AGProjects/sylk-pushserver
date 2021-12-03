@@ -14,9 +14,9 @@ __all__ = ['callid_to_uuid', 'fix_non_serializable_types', 'resources_available'
 
 def callid_to_uuid(call_id: str) -> str:
     """
-    
+
     Generate a UUIDv4 from a callId.
-    
+
     UUIDv4 format: five segments of seemingly random hex data,
     beginning with eight hex characters, followed by three
     four-character strings, then 12 characters at the end.
@@ -219,8 +219,8 @@ def pick_log_function(exc, *args, **kwargs):
 
 
 def log_add_request(task: str, host: str, loggers: dict,
-                         request_id: str = None, body: dict = None,
-                         error_msg: str = None) -> None:
+                    request_id: str = None, body: dict = None,
+                    error_msg: str = None) -> None:
     """
     Send log messages according to type of event.
     :param task: `str` type of event to log, can be
@@ -254,8 +254,8 @@ def log_add_request(task: str, host: str, loggers: dict,
 
 
 def log_remove_request(task: str, host: str, loggers: dict,
-                         request_id: str = None, body: dict = None,
-                         error_msg: str = None) -> None:
+                       request_id: str = None, body: dict = None,
+                       error_msg: str = None) -> None:
     """
     Send log messages according to type of event.
     :param task: `str` type of event to log, can be
