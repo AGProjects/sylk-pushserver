@@ -1,5 +1,3 @@
-import json
-
 from pushserver.resources import settings
 from oauth2client.service_account import ServiceAccountCredentials
 
