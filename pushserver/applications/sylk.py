@@ -23,7 +23,11 @@ class AppleSylkHeaders(AppleHeaders):
         'alert', 'background', 'voip',
         'complication', 'fileprovider' or 'mdm'.
         """
-        push_type = 'voip' if self.event in ('incoming_session', 'incoming_conference_request') else 'background'
+        push_type = 'alert'
+        if self.event in ('incoming_session', 'incoming_conference_request'):
+            push_type = 'voip'
+        elif self.event == 'cancel':
+            push_type = 'background'
 
         return push_type
 
@@ -88,6 +92,18 @@ class AppleSylkPayload(ApplePayload):
                 'session-id': callid_to_uuid(self.call_id),
                 'reason': self.reason
             }
+        elif self.event == 'message':
+            payload = {
+                'aps': {
+                    'alert': {
+                        'title' : 'New message',
+                        'body' : 'From %s' % self.sip_from,
+                    },
+                    'message_id': self.call_id,
+                    "sound" : "default",
+                    "badge" : self.badge,
+                }
+            }
         else:
             payload = {
                 'event': self.event,
@@ -125,6 +141,12 @@ class FirebaseSylkPayload(FirebasePayload):
                 'session-id': callid_to_uuid(self.call_id),
                 'reason': self.reason
             }
+        elif self.event == 'message':
+            data = {
+                'event': self.event,
+                'from_uri': self.sip_from,
+                'to_uri': self.sip_to
+            }
         else:
             data = {
                 'event': self.event,
@@ -141,19 +163,46 @@ class FirebaseSylkPayload(FirebasePayload):
                 'token': self.token,
                 'data': data,
                 'android': {
-                             'priority': 'high',
-                             'ttl': '60s'
-                            }
-                       }
-                   }
+                    'priority': 'high',
+                    'ttl': '60s'
+                }
+            }
+        }
+        if (self.event == 'message'):
+            http_payload |= {
+                'message': {
+                    'token': self.token,
+                    'data': data,
+                    'notification': {
+                        'title': 'New message',
+                        'body': 'From %s' % self.sip_from,
+                        'image': 'https://icanblink.com/apple-touch-icon-180x180.png'
+                    },
+                    'apns': {
+                        'headers': {
+                            'apns-priority': '5',
+                        }
+                    },
+                    'android': {
+                        'priority': 'high',
+                        'ttl': '60s',
+                        'notification': {
+                            'channel_id': 'sylk-messages-sound',
+                            'sound': 'default',
+                            'default_sound': True,
+                            'notification_priority': 'PRIORITY_HIGH'
+                        }
+                    }
+                }
+            }
 
-        #fcm_payload = messaging.Message(
+        # fcm_payload = messaging.Message(
         #          token=self.token,
         #          data=data,
         #          android=messaging.AndroidConfig(
         #                  ttl=datetime.timedelta(seconds=60),
         #                  priority='high'
         #          )
-        #)
+        # )
 
         return http_payload

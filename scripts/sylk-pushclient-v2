@@ -28,6 +28,7 @@ if __name__ == '__main__':
     subparserA.add_argument('--from_name', dest='from_name', required=False, help='From name')
     subparserA.add_argument('--to', dest='to_uri', required=True, help='To')
     subparserA.add_argument('--reason', dest='reason', required=False, help='Reason')
+    subparserA.add_argument('--badge', dest='badge', default=None, required=False, help='Badge to display')
     subparserA.add_argument('--deviceid', dest='device_id', default=None, required=False, help='Device Id/Sip instance')
 
     subparserB = subparsers.add_parser('add', help='Add a push token')
@@ -85,6 +86,7 @@ if __name__ == '__main__':
                       'from-display-name': from_name or from_uri,
                       'to': options.to_uri,
                       'call-id': options.call_id,
+                      'badge': options.badge,
                       'reason': options.reason}
         if options.device_id is None:
             url = '{}/{}/{}/push'.format(options.url, 'v2/tokens', options.account)

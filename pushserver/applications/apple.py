@@ -7,11 +7,12 @@ class AppleHeaders(object):
     """
 
     def __init__(self, app_id: str, event: str, token: str,
-                 call_id: str, sip_from: str,  from_display_name: str,
-                 sip_to: str, media_type: str, silent: bool, reason: str):
+                 call_id: str, sip_from: str, from_display_name: str,
+                 sip_to: str, media_type: str, silent: bool, reason: str,
+                 badge: int):
         """
         :param app_id: `str` id provided by the mobile application (bundle id)
-        :param event: `str` 'incoming_session', 'incoming_conference' or 'cancel'
+        :param event: `str` 'incoming_session', 'incoming_conference', 'cancel' or 'message'
         :param token: `str` destination device token.
         :param call_id: `str` unique sip parameter.
         :param sip_from: `str` SIP URI for who is calling
@@ -20,6 +21,7 @@ class AppleHeaders(object):
         :param media_type: `str` 'audio', 'video', 'chat', 'sms' or 'file-transfer'
         :param silent: `bool` True for silent notification
         :param reason: `str` Cancel reason
+        :param badge: `int` Number to display as badge
         """
 
         self.app_id = app_id
@@ -32,6 +34,7 @@ class AppleHeaders(object):
         self.silent = silent
         self.event = event
         self.reason = reason
+        self.badge = badge
 
         self.apns_push_type = self.create_push_type()
         self.apns_expiration = self.create_expiration()
@@ -101,11 +104,12 @@ class ApplePayload(object):
     """
 
     def __init__(self, app_id: str, event: str, token: str,
-                 call_id: str, sip_from: str,  from_display_name: str,
-                 sip_to: str, media_type, silent: bool, reason: str):
+                 call_id: str, sip_from: str, from_display_name: str,
+                 sip_to: str, media_type, silent: bool, reason: str,
+                 badge: int):
         """
         :param app_id: `str` id provided by the mobile application (bundle id)
-        :param event: `str` 'incoming_session', 'incoming_conference' or 'cancel'
+        :param event: `str` 'incoming_session', 'incoming_conference', 'cancel' or 'message'
         :param token: `str` destination device token.
         :param call_id: `str` unique sip parameter.
         :param sip_from: `str` SIP URI for who is calling
@@ -114,6 +118,7 @@ class ApplePayload(object):
         :param media_type: `str` 'audio', 'video', 'chat', 'sms' or 'file-transfer'
         :param silent: `bool` True for silent notification
         :param reason: `str` Cancel reason
+        :param badge: `int` Number to display as badge
         """
         self.app_id = app_id
         self.token = token
@@ -125,6 +130,7 @@ class ApplePayload(object):
         self.silent = silent
         self.event = event
         self.reason = reason
+        self.badge = badge
 
     @property
     def payload(self) -> dict:

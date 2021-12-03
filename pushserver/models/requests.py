@@ -126,6 +126,7 @@ class PushRequest(BaseModel):
     to: str                        # SIP URI for who is called
     media_type: str = None         # 'audio', 'video', 'chat', 'sms' or 'file-transfer'
     reason: str = None             # Cancel reason
+    badge: int = 1
 
     class Config:
         alias_generator = alias_rename
@@ -135,7 +136,7 @@ class WakeUpRequest(BaseModel):
     # API expects a json object like:
     app_id: str                    # id provided by the mobile application (bundle id)
     platform: str                  # 'firebase', 'android', 'apple' or 'ios'
-    event: str = None              # (required for sylk) 'incoming_session', 'incoming_conference' or 'cancel'
+    event: str = None              # (required for sylk) 'incoming_session', 'incoming_conference', 'cancel' or 'message'
     token: str                     # destination device token in hex
     device_id: str = None          # the device-id that owns the token (used for logging purposes)
     call_id: str                   # (required for apple) unique sip parameter
@@ -145,6 +146,7 @@ class WakeUpRequest(BaseModel):
     media_type: str = None         # 'audio', 'video', 'chat', 'sms' or 'file-transfer'
     silent: bool = True            # True for silent notification
     reason: str = None             # Cancel reason
+    badge: int = 1
 
     class Config:
         alias_generator = alias_rename
@@ -216,6 +218,6 @@ class WakeUpRequest(BaseModel):
 
     @validator('event')
     def event_valid_values(cls, v):
-        if v not in ('incoming_session', 'incoming_conference_request', 'cancel'):
-            raise ValueError("event must be 'incoming_session', 'incoming_conference_request' or 'cancel'")
+        if v not in ('incoming_session', 'incoming_conference_request', 'cancel', 'message'):
+            raise ValueError("event must be 'incoming_session', 'incoming_conference_request', 'cancel' or 'message'")
         return v

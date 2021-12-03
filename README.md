@@ -90,6 +90,7 @@ Json object structure:
 'event': 'incoming_session'
 'silent': True
 'reason': None
+"badge": "number"
 }
 ```
 
@@ -109,8 +110,9 @@ Where:
 * `silent: bool`: *(optional, default `True`)* True for silent notification
 * `reason:str`: *(optional)* Cancel reason
 * `event: str`,  type of event:
-    * For *Sylk app*  must be 'incoming_session', 'incoming_conference' or 'cancel'
+    * For *Sylk app*  must be 'incoming_session', 'incoming_conference', 'cancel' or 'message'
     * For *Linphone app*  must be 'incoming_session'
+* `badge: int`: optional badge to display
 
 The response is a json with the following structure:
 
@@ -162,7 +164,8 @@ and values as in API version 1. The API has the following methods:
     "from-display-name": "string",
     "to": "string",
     "media-type": "string",
-    "reason": "string"
+    "reason": "string",
+    "badge": "number"
 }
 ```
 
@@ -176,7 +179,8 @@ and values as in API version 1. The API has the following methods:
     "from-display-name": "string",
     "to": "string",
     "media-type": "string",
-    "reason": "string"
+    "reason": "string",
+    "badge": "number"
 }
 ```
 

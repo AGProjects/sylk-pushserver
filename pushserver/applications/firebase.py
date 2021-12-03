@@ -7,10 +7,11 @@ __all__ = ['FirebaseHeaders', 'FirebasePayload']
 class FirebaseHeaders(object):
     def __init__(self, app_id: str, event: str, token: str,
                  call_id: str, sip_from: str, from_display_name: str,
-                 sip_to: str, media_type: str, silent: bool, reason: str):
+                 sip_to: str, media_type: str, silent: bool, reason: str,
+                 badge: int):
         """
         :param app_id: `str` id provided by the mobile application (bundle id)
-        :param event: `str` 'incoming_session', 'incoming_conference' or 'cancel'
+        :param event: `str` 'incoming_session', 'incoming_conference', 'cancel' or 'message'
         :param token: `str` destination device token.
         :param call_id: `str` unique sip parameter.
         :param sip_from: `str` SIP URI for who is calling
@@ -18,6 +19,8 @@ class FirebaseHeaders(object):
         :param sip_to: `str` SIP URI for who is called
         :param media_type: `str` 'audio', 'video', 'chat', 'sms' or 'file-transfer'
         :param silent: `bool` True for silent notification
+        :param reason: `str` Cancel reason
+        :param badge: `int` Number to display as badge
         """
 
         self.app_id = app_id
@@ -30,7 +33,8 @@ class FirebaseHeaders(object):
         self.silent = silent
         self.event = event
         self.reason = reason
-        
+        self.badge = badge
+
         try:
             self.auth_key = settings.params.pns_register[(self.app_id, 'firebase')]['auth_key']
         except KeyError:
@@ -80,7 +84,8 @@ class FirebaseHeaders(object):
 class FirebasePayload(object):
     def __init__(self, app_id: str, event: str, token: str,
                  call_id: str, sip_from: str, from_display_name: str,
-                 sip_to: str, media_type: str, silent: bool, reason: str):
+                 sip_to: str, media_type: str, silent: bool, reason: str,
+                 badge: int):
         """
         :param app_id: `str` id provided by the mobile application (bundle id)
         :param event: `str` 'incoming_session', 'incoming_conference', 'cancel' or 'message'
@@ -92,6 +97,7 @@ class FirebasePayload(object):
         :param media_type: `str` 'audio', 'video', 'chat', 'sms' or 'file-transfer'
         :param silent: `bool` True for silent notification
         :param reason: `str` Cancel reason
+        :param badge: `int` Number to display as badge
         """
         self.app_id = app_id
         self.token = token
@@ -103,6 +109,7 @@ class FirebasePayload(object):
         self.sip_to = sip_to
         self.silent = silent
         self.reason = reason
+        self.badge = badge
 
     @property
     def payload(self) -> dict:
