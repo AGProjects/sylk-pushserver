@@ -72,6 +72,8 @@ class FileStorage(object):
             except ValueError:
                 pass
 
+        contact_params.device_id = contact_params.device_id.strip("<urn:uuid:>")
+
         data = contact_params.__dict__
         data['token'] = token
         data['background_token'] = background_token
@@ -125,6 +127,8 @@ class CassandraStorage(object):
                 (token, background_token) = contact_params.token.split('-')
             except ValueError:
                 pass
+
+        contact_params.device_id = contact_params.device_id.strip("<urn:uuid:>")
 
         try:
             PushTokens.create(username=username, domain=domain, device_id=contact_params.device_id,
