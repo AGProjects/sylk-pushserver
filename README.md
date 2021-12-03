@@ -10,7 +10,7 @@ notifications inside RTC provider infrastructures.  Both the provider and
 the mobile application customer, in the case of a shared infrastructure, can
 easily audit problems related to the processing of push notifications.
 
-Authors: 
+Authors:
 
  * Bibiana Rivadeneira
  * Tijmen de Mes
@@ -18,7 +18,7 @@ Authors:
 
 ## License
 
-Sylk Pushserver is licensed under GNU General Public License version 3.  
+Sylk Pushserver is licensed under GNU General Public License version 3.
 [Copy of the license](http://www.fsf.org/licensing/licenses/gpl-3.0.html)
 
 
@@ -78,15 +78,15 @@ Notifications or Firebase FCM servers.
 Json object structure:
 
 ```{
-'app-id': 'com.agprojects.sylk-ios', 
-'platform': 'apple', 
-'token': '6688-71a883fe', 
-'device-id': 'accc8375125582aae062353', 
-'call-id': '4dbe8-7a53-42bd-95f3-9a7d43938', 
-'from': 'alice@example.com', 
+'app-id': 'com.agprojects.sylk-ios',
+'platform': 'apple',
+'token': '6688-71a883fe',
+'device-id': 'accc8375125582aae062353',
+'call-id': '4dbe8-7a53-42bd-95f3-9a7d43938',
+'from': 'alice@example.com',
 'from_display_name': 'Alice',
-'to': 'bob@biloxi.com', 
-'media-type':'audio', 
+'to': 'bob@biloxi.com',
+'media-type':'audio',
 'event': 'incoming_session'
 'silent': True
 'reason': None
@@ -94,19 +94,19 @@ Json object structure:
 ```
 
 Where:
- 
-* `app-id: str`,  id provided by the mobile application (e.g. mobile bundle ID) 
-* `platform: str`,  'firebase', 'android', 'apple' or 'ios' 
+
+* `app-id: str`,  id provided by the mobile application (e.g. mobile bundle ID)
+* `platform: str`,  'firebase', 'android', 'apple' or 'ios'
 * `token: str`,  destination device token,
     * *iOS device tokens* are strings with 64 hexadecimal symbols
     * *Android device push tokens* can differ in length`.
-* `device-id: str`,  the device that generated the token 
-* `call-id: str`,  the unique session id for each call 
-* `from: str`,  address of the caller 
-* `from_display_name`, (mandatory)*, display name of the caller 
-* `to`,  address of the callee 
-* `media-type: str`:  'audio', 'video', 'chat', 'sms' or 'file-transfer' 
-* `silent: bool`: *(optional, default `True`)* True for silent notification 
+* `device-id: str`,  the device that generated the token
+* `call-id: str`,  the unique session id for each call
+* `from: str`,  address of the caller
+* `from_display_name`, (mandatory)*, display name of the caller
+* `to`,  address of the callee
+* `media-type: str`:  'audio', 'video', 'chat', 'sms' or 'file-transfer'
+* `silent: bool`: *(optional, default `True`)* True for silent notification
 * `reason:str`: *(optional)* Cancel reason
 * `event: str`,  type of event:
     * For *Sylk app*  must be 'incoming_session', 'incoming_conference' or 'cancel'
@@ -312,7 +312,7 @@ Remote logging is done using a POST request over HTTP with a json containg
 both the original request and the final response of the push notification.
 
 ```{
-'request': push_request, 
+'request': push_request,
 'response': push_response
 }
 ```
