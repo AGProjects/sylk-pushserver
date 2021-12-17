@@ -14,7 +14,8 @@ from pushserver.resources.storage.errors import StorageError
 from pushserver.resources.notification import handle_request
 from pushserver.resources.utils import (check_host,
                                         log_event, log_incoming_request,
-                                        log_push_request)
+                                        log_push_request,
+                                        fix_platform_name)
 
 router = APIRouter()
 
@@ -47,6 +48,8 @@ async def task_push(account: str,
             continue
 
         push_parameters.update(push_request.__dict__)
+
+        push_parameters['platform'] = fix_platform_name(push_parameters['platform'])
 
         reversed_push_parameters = {}
         for item in push_parameters.keys():
@@ -169,6 +172,8 @@ async def push_requests(account: str,
                     continue
 
                 push_parameters.update(push_request.__dict__)
+
+                push_parameters['platform'] = fix_platform_name(push_parameters['platform'])
 
                 reversed_push_parameters = {}
                 for item in push_parameters.keys():
