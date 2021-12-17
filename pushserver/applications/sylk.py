@@ -169,7 +169,7 @@ class FirebaseSylkPayload(FirebasePayload):
             }
         }
         if (self.event == 'message'):
-            http_payload |= {
+            http_payload = {
                 'message': {
                     'token': self.token,
                     'data': data,
