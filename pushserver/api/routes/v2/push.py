@@ -184,8 +184,8 @@ async def push_requests(account: str,
                         item = item.replace('_', '-')
                     reversed_push_parameters[item] = value
 
-                # Use background_token for cancel
-                if push_parameters['event'] == 'cancel' and push_parameters['background_token'] is not None:
+                # Use background_token for cancel and message
+                if push_parameters['event'] in ('cancel', 'message') and push_parameters['background_token'] is not None:
                     reversed_push_parameters['token'] = push_parameters['background_token']
 
                 try:
