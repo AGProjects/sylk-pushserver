@@ -81,7 +81,7 @@ async def task_push(account: str,
 
         code = results.get('code')
         if code == 410:
-            expired_devices.append((push_parameters.app_id, push_parameters.device_id))
+            expired_devices.append((push_parameters['app-id'], push_parameters['device-id']))
             code = 200
         description = 'push notification responses'
         data.append(results)
@@ -209,7 +209,7 @@ async def push_requests(account: str,
 
                 code = results.get('code')
                 if code == 410:
-                    expired_devices.append((push_parameters['app_id'], push_parameters['device_id']))
+                    expired_devices.append((push_parameters['app-id'], push_parameters['device-id']))
                     code = 200
                 description = 'push notification responses'
                 data.append(results)
