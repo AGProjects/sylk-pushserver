@@ -144,19 +144,20 @@ class CassandraStorage(object):
             log_event(loggers=settings.params.loggers, msg=e, level='error')
             raise StorageError
 
-    def remove(self, account, app_id, device_id):
+    def remove(self, account, app_id='', device_id=''):
         username, domain = account.split('@', 1)
         try:
             PushTokens.objects(PushTokens.username == username, PushTokens.domain == domain, PushTokens.device_id == device_id, PushTokens.app_id == app_id).if_exists().delete()
         except LWTException:
             pass
-        else:
-            # We need to check for other device_ids/app_ids before we can remove the cache value for OpenSIPS
-            if not self[account]:
-                try:
-                    OpenSips.objects(OpenSips.opensipskey == account).if_exists().delete()
-                except LWTException:
-                    pass
+
+        # We need to check for other device_ids/app_ids before we can remove the cache value for OpenSIPS
+        if not self[account]:
+            try:
+                OpenSips.objects(OpenSips.opensipskey == account).if_exists().delete()
+            except LWTException:
+                pass
+
 
 class TokenStorage(object, metaclass=Singleton):
 

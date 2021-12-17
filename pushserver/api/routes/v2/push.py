@@ -39,6 +39,7 @@ async def task_push(account: str,
 
     if not storage_data:
         # Push request was not sent: user not found
+        storage.remove(account)
         return
 
     for device_key, push_parameters in storage_data.items():
@@ -157,6 +158,7 @@ async def push_requests(account: str,
                              request_id=request_id, body=push_request.__dict__)
             if not storage_data:
                 description, data = 'Push request was not sent: user not found', {"account": account}
+                storage.remove(account)
                 return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
                                     content={'code': 404,
                                              'description': description,
