@@ -294,14 +294,14 @@ def log_push_request(task: str, host: str, loggers: dict,
     """
     Send log messages according to type of event.
     :param task: `str` type of event to log, can be
-    'log_request', 'log_success' or 'log_failure'
+     'log_request', 'log_success' or 'log_failure'
     :param host: `str` client host where request comes from
     :param loggers: `dict` global logging instances to write messages (params.loggers)
     :param request_id: `str` request ID generated on request
     :param body: `dict` body of request
     :param error_msg: `str` to show in log
     """
-    sip_to = body.get('sip_to')
+    sip_to = body.get('to')
     event = body.get('event')
 
     if task == 'log_request':
