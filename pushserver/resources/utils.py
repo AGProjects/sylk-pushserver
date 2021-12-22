@@ -6,7 +6,6 @@ import ssl
 import time
 
 from ipaddress import ip_address
-from datetime import datetime
 
 __all__ = ['callid_to_uuid', 'fix_non_serializable_types', 'resources_available', 'ssl_cert', 'try_again', 'check_host',
            'log_event', 'fix_device_id', 'fix_platform_name', 'log_incoming_request']
