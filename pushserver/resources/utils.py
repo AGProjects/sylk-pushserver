@@ -139,6 +139,7 @@ def check_host(host, allowed_hosts) -> bool:
 
     return False
 
+
 def log_event(loggers: dict, msg: str, level: str = 'deb') -> None:
     """
     Write log messages into log file and in journal if specified.
@@ -196,6 +197,7 @@ def fix_platform_name(platform: str) -> str:
     else:
         return platform
 
+
 def fix_payload(body: dict) -> dict:
     payload = {}
     for item in body.keys():
@@ -223,7 +225,7 @@ def log_add_request(task: str, host: str, loggers: dict,
     """
     Send log messages according to type of event.
     :param task: `str` type of event to log, can be
-    'log_request', 'log_success' or 'log_failure'
+     'log_request', 'log_success' or 'log_failure'
     :param host: `str` client host where request comes from
     :param loggers: `dict` global logging instances to write messages (params.loggers)
     :param request_id: `str` request ID generated on request
@@ -234,7 +236,7 @@ def log_add_request(task: str, host: str, loggers: dict,
         payload = fix_payload(body)
         level = 'info'
         msg = f'{host} - Add Token - Request [{request_id}]: ' \
-                f'{payload}'
+              f'{payload}'
         log_event(msg=msg, level=level, loggers=loggers)
 
     elif task == 'log_success':
@@ -258,7 +260,7 @@ def log_remove_request(task: str, host: str, loggers: dict,
     """
     Send log messages according to type of event.
     :param task: `str` type of event to log, can be
-    'log_request', 'log_success' or 'log_failure'
+     'log_request', 'log_success' or 'log_failure'
     :param host: `str` client host where request comes from
     :param loggers: `dict` global logging instances to write messages (params.loggers)
     :param request_id: `str` request ID generated on request
