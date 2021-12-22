@@ -32,6 +32,10 @@
 ; be logged
 ; debug = False
 
+; Turn on Hpack debugging for Apple connections, normal debug needs to be also
+; enabled
+; debug_hpack = False
+
 [applications]
 ; paths are relative to the config directory, by default /etc/sylk-pushserver
 ; and if missing ./config from the curent directory

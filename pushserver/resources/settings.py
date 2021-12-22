@@ -214,6 +214,15 @@ class ConfigParams(object):
         if debug:
             logger_journal.setLevel(logging.DEBUG)
 
+        debug_hpack = False
+        try:
+            debug_hpack = True if f"{config['server']['debug_hpack']}".lower() == 'true' else False
+        except KeyError:
+            pass
+
+        if not debug_hpack:
+            logging.getLogger("hpack").setLevel(logging.INFO)
+
         return loggers
 
     def set_register(self):
