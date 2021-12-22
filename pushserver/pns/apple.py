@@ -7,10 +7,8 @@ import time
 import hyper
 from hyper import HTTP20Connection, tls
 from pushserver.models.requests import WakeUpRequest
-
-from pushserver.resources.utils import log_event, ssl_cert
-
 from pushserver.pns.base import PNS, PushRequest, PlatformRegister
+from pushserver.resources.utils import log_event, ssl_cert
 
 
 class ApplePNS(PNS):
