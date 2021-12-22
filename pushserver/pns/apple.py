@@ -4,8 +4,8 @@ import socket
 import ssl
 import time
 
-import hyper
-from hyper import HTTP20Connection, tls
+from httpx import Client
+
 from pushserver.models.requests import WakeUpRequest
 from pushserver.pns.base import PNS, PushRequest, PlatformRegister
 from pushserver.resources.utils import log_event, ssl_cert
@@ -79,7 +79,7 @@ class AppleConn(ApplePNS):
         return ssl_context
 
     @property
-    def connection(self) -> HTTP20Connection:
+    def connection(self) -> Client:
         """
         Open an apple connection
         requires a ssl context
@@ -90,9 +90,9 @@ class AppleConn(ApplePNS):
         port = self.port
         ssl_context = self.ssl_context
 
-        connection = HTTP20Connection(host=host, port=port,
-                                      ssl_context=ssl_context,
-                                      force_proto=tls.H2C_PROTOCOL)
+        connection = Client(http2=True,
+                            base_url=f'https://{host}:{port}',
+                            verify=ssl_context)
 
         cert_file_name = self.cert_file.split('/')[-1]
         key_file_name = self.key_file.split('/')[-1] if self.key_file else None
@@ -280,7 +280,7 @@ class ApplePushRequest(PushRequest):
 
         n_retries, backoff_factor = self.retries_params(self.media_type)
 
-        log_path = f'http://{self.apple_pns.url_push}{self.path}'
+        log_path = f'https://{self.apple_pns.url_push}{self.path}'
 
         status_forcelist = tuple([status for status in range(500, 600)])
 
@@ -294,29 +294,21 @@ class ApplePushRequest(PushRequest):
             if self.connection:
                 try:
                     self.log_request(path=log_path)
-                    self.connection.request('POST', self.path,
-                                            self.payload,
-                                            self.headers)
+                    response = self.connection.post(self.path,
+                                                    data=self.payload,
+                                                    headers=self.headers)
 
-                    response = self.connection.get_response()
-                    reason_str = response.read().decode('utf8').replace("'", '"')
+                    if response.status_code != 200:
+                        body = response.json()
+                        reason = body.get("reason")
 
-                    if reason_str:
-                        reason_json = json.loads(reason_str)
-                        reason = reason_json.get('reason')
-                    else:
-                        reason = reason_str
-
-                    status = response.status
+                    status = response.status_code
 
                     if status not in status_forcelist:
                         break
 
                 except socket.gaierror:
                     reason = 'socket error'
-
-                except hyper.http20.exceptions.StreamResetError:
-                    reason = 'stream error'
 
                 except ValueError as err:
                     reason = f'Bad type of object in headers or payload: {err}'
@@ -331,7 +323,7 @@ class ApplePushRequest(PushRequest):
         if counter == n_retries:
             reason = 'max retries reached'
 
-        url = f'https:{self.connection.host}:{self.connection.port}{self.path}'
+        url = f'{self.connection.base_url}{self.path}'
 
         if status != 200:
             details = self.apple_error_info(reason)
@@ -347,8 +339,7 @@ class ApplePushRequest(PushRequest):
                    'url': url,
                    'platform': 'apple',
                    'call_id': self.call_id,
-                   'token': self.token
-                   }
+                   'token': self.token}
 
         self.results = results
         self.log_results()

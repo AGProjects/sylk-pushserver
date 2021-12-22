@@ -1,4 +1,4 @@
 fastapi == 0.52.0
-hyper >= 0.7.0
+httpx[http2]=>0.21.1
 pydantic >= 1.4
 pyinotify >= 0.9.6
