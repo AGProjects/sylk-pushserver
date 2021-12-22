@@ -150,7 +150,7 @@ def log_event(loggers: dict, msg: str, level: str = 'deb') -> None:
     logger = loggers.get('to_journal')
     if logger.level != logging.DEBUG and loggers['debug'] is True:
         logger.setLevel(logging.DEBUG)
-    elif logger.level != logging.INFO:
+    elif logger.level != logging.INFO and loggers['debug'] is False:
         logger.setLevel(logging.INFO)
 
     if level == 'info':
