@@ -19,7 +19,7 @@
 ; by default any client is allowed to send requests to the server
 ; IP addresses and networks in CIDR notation are supported
 ; e.g: 10.10.10.0/24, 127.0.0.1, 192.168.1.2
-; allowed_hosts = [] 
+; allowed_hosts = []
 
 ; by default logs go to the journal; uncomment below to also log to a file
 ; log_to_file = true
