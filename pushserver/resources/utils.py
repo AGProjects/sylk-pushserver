@@ -190,7 +190,7 @@ def fix_platform_name(platform: str) -> str:
     :param platform: `str` name of platform
     :return: a `str` with fixed name.
     """
-    if platform in ('firebase', 'android'):
+    if platform in ('firebase', 'android', 'fcm'):
         return 'firebase'
     elif platform in ('apple', 'ios'):
         return 'apple'
