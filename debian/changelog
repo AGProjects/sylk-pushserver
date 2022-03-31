@@ -8,6 +8,9 @@ sylk-pushserver (2.0.0) unstable; urgency=medium
   * Refactored configuration loading
   * Use payload fix function
   * Return more usefull errors if request validation fails
+  * Added pushclient to use v2 API
+  * Added support for Message push notifications
+  * Support 'fcm' as platform name
 
  -- Adrian Georgescu <ag@ag-projects.com>  Sat, 12 Dec 2020 12:32:53 +0100
 
