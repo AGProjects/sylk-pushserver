@@ -73,7 +73,7 @@ class AddRequest(BaseModel):
 
     @validator('platform')
     def platform_valid_values(cls, v):
-        if v not in ('apple', 'ios', 'android', 'firebase', 'fcm'):
+        if v not in ('apple', 'ios', 'android', 'firebase', 'fcm', 'apns'):
             raise ValueError("platform must be 'apple', 'android' or 'firebase'")
         return v
 

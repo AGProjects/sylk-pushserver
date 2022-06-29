@@ -192,7 +192,7 @@ def fix_platform_name(platform: str) -> str:
     """
     if platform in ('firebase', 'android', 'fcm'):
         return 'firebase'
-    elif platform in ('apple', 'ios'):
+    elif platform in ('apple', 'ios', 'apns'):
         return 'apple'
     else:
         return platform
