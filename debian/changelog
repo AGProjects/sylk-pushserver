@@ -11,6 +11,7 @@ sylk-pushserver (2.0.0) unstable; urgency=medium
   * Added pushclient to use v2 API
   * Added support for Message push notifications
   * Support 'fcm' as platform name
+  * Support 'apns' as platform name
 
  -- Adrian Georgescu <ag@ag-projects.com>  Sat, 12 Dec 2020 12:32:53 +0100
 
