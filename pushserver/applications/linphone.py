@@ -87,6 +87,7 @@ class AppleLinphonePayload(ApplePayload):
                                'loc-key': 'IC_SIL',
                                'call-id': self.call_id,
                                'send-time': send_time},
+                       'from-uri': self.sip_from,
                        'pn_ttl': 2592000}
         else:
             payload = {'aps': {'alert': {'loc-key': 'IC_MSG',
