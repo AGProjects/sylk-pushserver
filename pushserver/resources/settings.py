@@ -206,8 +206,8 @@ class ConfigParams(object):
                 hdlr.setLevel(logging.DEBUG)
                 logger_journal.addHandler(hdlr)
             except PermissionError:
-                log.warning(f'Permission denied for log file: {log_path}, ' \
-                            f'logging will only be in the journal or foreground')
+                logger_journal.warning(f'Permission denied for log file: {log_path}, ' \
+                                       f'logging will only be in the journal or foreground')
 
         debug = debug or self.debug
         loggers['debug'] = debug
