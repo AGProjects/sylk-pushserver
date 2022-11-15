@@ -56,9 +56,9 @@ args = parser.parse_args()
 
 if args.fork:
     try:
-       from systemd.journal import JournaldLogHandler
+        from cysystemd.journal import JournaldLogHandler
     except ImportError:
-       from systemd.journal import JournalHandler
+        from systemd.journal import JournalHandler
 
     try:
         journal_handler = JournaldLogHandler()
