@@ -5,6 +5,7 @@ export SETUPTOOLS_DEB_LAYOUT = 1
 export DH_VIRTUALENV_INSTALL_ROOT = /usr/lib/python3/dist-packages
 export DH_VIRTUALENV_ARGUMENTS := --always-copy --python python3 --system-site-packages
 export DH_REQUIREMENTS_FILE := debian-requirements.txt
+export DH_UPGRADE_PIP := 21.2.4
 
 %:
 	dh $@ --buildsystem dh_virtualenv
