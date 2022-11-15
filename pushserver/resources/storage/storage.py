@@ -164,7 +164,7 @@ class TokenStorage(object, metaclass=Singleton):
     def __new__(self):
         configuration = CassandraConfig.__cfgtype__(CassandraConfig.__cfgfile__)
         if configuration.files:
-            msg='Reading storage configuration from {}'.format(', '.join(configuration.files))
+            msg = 'Reading storage configuration from {}'.format(', '.join(configuration.files))
             log_event(loggers=settings.params.loggers, msg=msg, level='info')
         makedirs(ServerConfig.spool_dir.normalized)
         if CASSANDRA_MODULES_AVAILABLE and CassandraConfig.cluster_contact_points:
