@@ -216,20 +216,24 @@ Scroll down to Push notifications
 
 Click Configure
 
-Generate a certificate. 
+Generate a certificate request using Keychain assistant. 
 
-Export the certificate to pk12 format from Keychain.
+The private key will be saved in the Keys section of Keychain.
+
+Import the generated .cer certificate into Keychain.
+
+Export the certificate from the Keys section into pk12 format.
 
 Convert the cartificate and private key to .pem format:
 
-openssl pkcs12 -in Certificates.p12   -nocerts -out sylk.privateKey.pem
-openssl pkcs12 -in Certificates.p12 -clcerts -nokeys -out sylk.pem
+openssl pkcs12 -in Certificates.p12 -nocerts -out sylk.privateKey.pem
+openssl pkcs12 -in Certificates.p12 -clcerts -nokeys -out sylk.crt
 
 Remove the passcode from the private key:
 
 openssl rsa -in sylk.privateKey.pem -out sylk.key
 
-Use sylk.pem and sylk.key inside applications.ini config file.
+Use sylk.crt and sylk.key inside applications.ini config file.
 
 
 ## Installation
