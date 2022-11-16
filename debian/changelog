@@ -13,7 +13,7 @@ sylk-pushserver (2.0.0) unstable; urgency=medium
   * Support 'fcm' as platform name
   * Support 'apns' as platform name
 
- -- Adrian Georgescu <ag@ag-projects.com>  Sat, 12 Dec 2020 12:32:53 +0100
+ -- Tijmen de Mes <tijmen@ag-projects.com>  Wed, 16 Nov 2022 10:42:09 +0100
 
 sylk-pushserver (1.0.7) unstable; urgency=medium
 
