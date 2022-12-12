@@ -5,6 +5,7 @@ from typing import Callable
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from pushserver import __info__ as package_info
 from pushserver.api.errors.validation_error import validation_exception_handler
 from pushserver.api.routes.api import router
 from pushserver.resources import settings
@@ -12,7 +13,7 @@ from pushserver.resources.utils import log_event
 
 
 def get_server() -> FastAPI:
-    server = FastAPI(title='sylk-pushserver', version='1.0.0', debug=True)
+    server = FastAPI(title='sylk-pushserver', version=package_info.__version__, debug=True)
     server.add_event_handler("startup", create_start_server_handler())
     server.add_exception_handler(RequestValidationError, validation_exception_handler)
     server.include_router(router)
