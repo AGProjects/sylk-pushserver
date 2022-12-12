@@ -34,7 +34,10 @@ else:
         from cassandra.cqlengine import CQLEngineException
         from cassandra.cqlengine.query import LWTException
         from cassandra.cluster import NoHostAvailable
-        from cassandra.io import asyncioreactor
+        try:
+            from cassandra.io import asyncioreactor
+        except ImportError:
+            pass
         from cassandra.policies import DCAwareRoundRobinPolicy
         from pushserver.models.cassandra import PushTokens, OpenSips
         if CassandraConfig.table:
@@ -96,9 +99,20 @@ class FileStorage(object):
 
 class CassandraStorage(object):
     def load(self):
+        connection_args = dict(
+            load_balancing_policy=DCAwareRoundRobinPolicy(),
+            protocol_version=4
+        )
         try:
-            connection.setup(CassandraConfig.cluster_contact_points, CassandraConfig.keyspace, load_balancing_policy=DCAwareRoundRobinPolicy(), protocol_version=4, connection_class=asyncioreactor.AsyncioConnection)
-        except NoHostAvailable:
+            connection_args['connection_class'] = asyncioreactor.AsyncioConnection
+        except NameError:
+            pass
+
+        try:
+            connection.setup(CassandraConfig.cluster_contact_points, CassandraConfig.keyspace, **connection_args)
+        except OSError:
+            pass
+        except NoHostAvailable as e:
             msg='Not able to connect to any of the Cassandra contact points'
             log_event(loggers=settings.params.loggers, msg=msg, level='error')
 
