@@ -104,6 +104,28 @@ class AppleSylkPayload(ApplePayload):
                     "badge": self.badge,
                 }
             }
+        elif self.event == 'transfer':
+            payload = {
+                'aps': {
+                    'alert': {
+                        'title': f'New {self.media_type} message' if self.media_type in ['audio', 'video'] else 'New file',
+                        'body': 'From %s' % self.sip_from,
+                    },
+                    "sound": "default",
+                    "badge": self.badge,
+                },
+                'data': {
+                    'event': self.event,
+                    'from_uri': self.sip_form,
+                    'to_uri': self.sip_to,
+                    'file-id': self.call_id,
+                    'media-type': self.media_type,
+                    'metadata': {
+                        'filename': self.filename,
+                        'filetype': self.filetype
+                    }
+                }
+            }
         else:
             payload = {
                 'event': self.event,
@@ -147,6 +169,18 @@ class FirebaseSylkPayload(FirebasePayload):
                 'from_uri': self.sip_from,
                 'to_uri': self.sip_to
             }
+        elif self.event == 'transfer':
+            data = {
+                'event': self.event,
+                'from_uri': self.sip_form,
+                'to_uri': self.sip_to,
+                'media-type': self.media_type,
+                'file-id': self.call_id,
+                'metadata': {
+                    'filename': self.filename,
+                    'filetype': self.filetype
+                }
+            }
         else:
             data = {
                 'event': self.event,
@@ -168,13 +202,40 @@ class FirebaseSylkPayload(FirebasePayload):
                 }
             }
         }
-        if (self.event == 'message'):
+        if self.event == 'message':
             http_payload = {
                 'message': {
                     'token': self.token,
                     'data': data,
                     'notification': {
                         'title': 'New message',
+                        'body': 'From %s' % self.sip_from,
+                        'image': 'https://icanblink.com/apple-touch-icon-180x180.png'
+                    },
+                    'apns': {
+                        'headers': {
+                            'apns-priority': '5',
+                        }
+                    },
+                    'android': {
+                        'priority': 'high',
+                        'ttl': '60s',
+                        'notification': {
+                            'channel_id': 'sylk-messages-sound',
+                            'sound': 'default',
+                            'default_sound': True,
+                            'notification_priority': 'PRIORITY_HIGH'
+                        }
+                    }
+                }
+            }
+        elif self.event == 'transfer':
+            http_payload = {
+                'message': {
+                    'token': self.token,
+                    'data': data,
+                    'notification': {
+                        'title': f'New {self.media_type} message' if self.media_type in ['audio', 'video'] else 'New file',
                         'body': 'From %s' % self.sip_from,
                         'image': 'https://icanblink.com/apple-touch-icon-180x180.png'
                     },

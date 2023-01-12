@@ -127,6 +127,8 @@ class PushRequest(BaseModel):
     media_type: str = None         # 'audio', 'video', 'chat', 'sms' or 'file-transfer'
     reason: str = None             # Cancel reason
     badge: int = 1
+    filename: str = None
+    filetype: str = None
 
     class Config:
         alias_generator = alias_rename
@@ -147,6 +149,8 @@ class WakeUpRequest(BaseModel):
     silent: bool = True            # True for silent notification
     reason: str = None             # Cancel reason
     badge: int = 1
+    filename: str = None
+    filetype: str = None
 
     class Config:
         alias_generator = alias_rename
@@ -199,9 +203,9 @@ class WakeUpRequest(BaseModel):
             media_type = values.get('media-type')
             if not media_type:
                 raise ValueError("Field media-type required")
-            if media_type not in ('audio', 'video', 'chat', 'sms', 'file-transfer'):
+            if media_type not in ('audio', 'video', 'image', 'chat', 'sms', 'file-transfer'):
                 raise ValueError("media-type must be 'audio', 'video', "
-                                 "'chat', 'sms', 'file-transfer'")
+                                 "'chat', 'sms', 'file-transfer', 'image'")
         if 'linphone' in name:
             if event:
                 if event != 'incoming_session':
@@ -212,12 +216,12 @@ class WakeUpRequest(BaseModel):
 
     @validator('platform')
     def platform_valid_values(cls, v):
-        if v not in ('apple', 'ios', 'android', 'firebase','fcm', 'apns'):
+        if v not in ('apple', 'ios', 'android', 'firebase', 'fcm', 'apns'):
             raise ValueError("platform must be 'apple', 'android' or 'firebase'")
         return v
 
     @validator('event')
     def event_valid_values(cls, v):
-        if v not in ('incoming_session', 'incoming_conference_request', 'cancel', 'message'):
-            raise ValueError("event must be 'incoming_session', 'incoming_conference_request', 'cancel' or 'message'")
+        if v not in ('incoming_session', 'incoming_conference_request', 'cancel', 'message', 'transfer'):
+            raise ValueError("event must be 'incoming_session', 'incoming_conference_request', 'cancel' or 'message', 'transfer'")
         return v

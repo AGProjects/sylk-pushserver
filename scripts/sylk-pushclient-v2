@@ -30,6 +30,8 @@ if __name__ == '__main__':
     subparserA.add_argument('--reason', dest='reason', required=False, help='Reason')
     subparserA.add_argument('--badge', dest='badge', default=1, required=False, help='Badge to display')
     subparserA.add_argument('--deviceid', dest='device_id', default=None, required=False, help='Device Id/Sip instance')
+    subparserA.add_argument('--filename', dest='filename', default=None, required=False, help='Filetype')
+    subparserA.add_argument('--filetype', dest='filetype', default=None, required=False, help='Filetype')
 
     subparserB = subparsers.add_parser('add', help='Add a push token')
     subparserB.add_argument('--platform', dest='platform', help='Platform')
@@ -86,7 +88,9 @@ if __name__ == '__main__':
                       'to': options.to_uri,
                       'call-id': options.call_id,
                       'badge': options.badge,
-                      'reason': options.reason}
+                      'reason': options.reason,
+                      'filename': options.filename,
+                      'filetype': options.filetype}
         if options.device_id is None:
             url = '{}/{}/{}/push'.format(options.url, 'v2/tokens', options.account)
         else:
