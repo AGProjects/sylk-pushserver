@@ -96,12 +96,12 @@ class AppleSylkPayload(ApplePayload):
             payload = {
                 'aps': {
                     'alert': {
-                        'title' : 'New message',
-                        'body' : 'From %s' % self.sip_from,
+                        'title': 'New message',
+                        'body': 'From %s' % self.sip_from,
                     },
                     'message_id': self.call_id,
-                    "sound" : "default",
-                    "badge" : self.badge,
+                    "sound": "default",
+                    "badge": self.badge,
                 }
             }
         else:
