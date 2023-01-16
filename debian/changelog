@@ -1,7 +1,11 @@
 sylk-pushserver (2.0.0) unstable; urgency=medium
 
+  * Added support for file transfers
+  * Added support for messaging
   * Added mobile tokens storage
   * Added v2 routes for storage API
+  * Support 'fcm' as platform name
+  * Support 'apns' as platform name
   * Fixed debian packaging
   * Cleaned up log functions
   * Changed shebang so it runs in a virtual env
@@ -9,10 +13,6 @@ sylk-pushserver (2.0.0) unstable; urgency=medium
   * Use payload fix function
   * Return more usefull errors if request validation fails
   * Added pushclient to use v2 API
-  * Added support for message push notifications
-  * Added inital support for transfer push notifications
-  * Support 'fcm' as platform name
-  * Support 'apns' as platform name
 
  -- Tijmen de Mes <tijmen@ag-projects.com>  Thu, 12 Jan 2023 10:01:09 +0100
 
