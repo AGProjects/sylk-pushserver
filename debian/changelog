@@ -1,3 +1,10 @@
+sylk-pushserver (2.0.1) unstable; urgency=medium
+
+  * Fixed removing expired devices when using API v2
+  * Updated debian dependencies
+
+ -- Tijmen de Mes <tijmen@ag-projects.com>  Thu, 13 Apr 2023 13:13:58 +0200
+
 sylk-pushserver (2.0.0) unstable; urgency=medium
 
   * Added support for file transfers
