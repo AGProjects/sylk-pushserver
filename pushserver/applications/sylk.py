@@ -102,6 +102,11 @@ class AppleSylkPayload(ApplePayload):
                     'message_id': self.call_id,
                     "sound": "default",
                     "badge": self.badge,
+                },
+                'data': {
+                    'event': self.event,
+                    'from_uri': self.sip_from,
+                    'to_uri': self.sip_to,
                 }
             }
         elif self.event == 'transfer':
