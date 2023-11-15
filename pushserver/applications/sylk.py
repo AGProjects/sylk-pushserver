@@ -116,7 +116,7 @@ class AppleSylkPayload(ApplePayload):
                 },
                 'data': {
                     'event': self.event,
-                    'from_uri': self.sip_form,
+                    'from_uri': self.sip_from,
                     'to_uri': self.sip_to,
                     'file-id': self.call_id,
                     'media-type': self.media_type,
@@ -172,7 +172,7 @@ class FirebaseSylkPayload(FirebasePayload):
         elif self.event == 'transfer':
             data = {
                 'event': self.event,
-                'from_uri': self.sip_form,
+                'from_uri': self.sip_from,
                 'to_uri': self.sip_to,
                 'media-type': self.media_type,
                 'file-id': self.call_id,
