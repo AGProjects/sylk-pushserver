@@ -244,7 +244,7 @@ Install the AG Projects debian software signing key:
 
 sudo curl -o /usr/share/keyrings/agp-debian-key.gpg https://download.ag-projects.com/agp-debian-key.gpg
 
-To use it for debian you should put the following in /etc/apt/sources.list.d/ag-projects.list. Substitute __DISTRO__ with your distribution name, e.g. buster, bookworm...
+To use it for debian you should put the following in /etc/apt/sources.list.d/ag-projects.list. Substitute `__DISTRO__` with your distribution name, e.g. buster, bookworm...
 
 #### Debian
 
@@ -256,7 +256,7 @@ deb-src [signed-by=/usr/share/keyrings/agp-debian-key.gpg] https://packages.ag-p
 
 #### Ubuntu
 
-To use it for ubuntu you should put the following in /etc/apt/sources.list.d/ag-projects.list. Substitute __DISTRO__ with your distribution name, e.g. focal, jammy...
+To use it for ubuntu you should put the following in /etc/apt/sources.list.d/ag-projects.list. Substitute `__DISTRO__` with your distribution name, e.g. focal, jammy...
 
 ```
 deb     [signed-by=/usr/share/keyrings/agp-debian-key.gpg] https://packages.ag-projects.com/ubuntu/ __DISTRO__ main contrib
