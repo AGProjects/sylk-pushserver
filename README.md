@@ -3,7 +3,7 @@
 
 [Home page](http://sylkserver.com)
 
-Copyright (C) 2022 AG Projects
+Copyright (C) 2023 AG Projects
 
 Sylk Pushserver was designed to act as a central dispatcher for mobile push
 notifications inside RTC provider infrastructures.  Both the provider and
@@ -216,7 +216,7 @@ Scroll down to Push notifications
 
 Click Configure
 
-Generate a certificate request using Keychain assistant. 
+Generate a certificate request using Keychain assistant.
 
 The private key will be saved in the Keys section of Keychain.
 
@@ -238,23 +238,36 @@ Use sylk.crt and sylk.key inside applications.ini config file.
 
 ## Installation
 
-### As a Debian package
+### As a Debian/Ubuntu package
 
 Install the AG Projects debian software signing key:
 
-wget http://download.ag-projects.com/agp-debian-gpg.key
+sudo curl -o /usr/share/keyrings/agp-debian-key.gpg https://download.ag-projects.com/agp-debian-key.gpg
 
-sudo apt-key add agp-debian-gpg.key
+To use it for debian you should put the following in /etc/apt/sources.list.d/ag-projects.list. Substitute __DISTRO__ with your distribution name, e.g. buster, bookworm...
 
-Add these repository matching your distribution to /etc/apt/sources.list:
+#### Debian
 
-https://docs-new.sipthor.net/w/debian_package_repositories/
+
+```
+deb     [signed-by=/usr/share/keyrings/agp-debian-key.gpg] https://packages.ag-projects.com/debian/ __DISTRO__ main contrib
+deb-src [signed-by=/usr/share/keyrings/agp-debian-key.gpg] https://packages.ag-projects.com/debian/ __DISTRO__ main contrib
+```
+
+#### Ubuntu
+
+To use it for ubuntu you should put the following in /etc/apt/sources.list.d/ag-projects.list. Substitute __DISTRO__ with your distribution name, e.g. focal, jammy...
+
+```
+deb     [signed-by=/usr/share/keyrings/agp-debian-key.gpg] https://packages.ag-projects.com/ubuntu/ __DISTRO__ main contrib
+deb-src [signed-by=/usr/share/keyrings/agp-debian-key.gpg] https://packages.ag-projects.com/ubuntu/ __DISTRO__ main contrib
+```
 
 Update the list of available packages:
 
-sudo apt-get update
+`sudo apt-get update`
 
-sudo apt-get install sylk-pushserver
+`sudo apt-get install sylk-pushserver`
 
 
 ### From source
