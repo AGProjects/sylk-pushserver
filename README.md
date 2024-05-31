@@ -240,7 +240,28 @@ Use sylk.crt and sylk.key inside applications.ini config file.
 
 ### As a Debian/Ubuntu package
 
-Follow instruction from https://packages.ag-projects.com
+Install the AG Projects debian software signing key:
+
+sudo curl -o /usr/share/keyrings/agp-debian-key.gpg https://download.ag-projects.com/agp-debian-key.gpg
+
+To use it for debian you should put the following in /etc/apt/sources.list.d/ag-projects.list. Substitute `__DISTRO__` with your distribution name, e.g. buster, bookworm...
+
+#### Debian
+
+
+```
+deb     [signed-by=/usr/share/keyrings/agp-debian-key.gpg] https://packages.ag-projects.com/debian/ __DISTRO__ main contrib
+deb-src [signed-by=/usr/share/keyrings/agp-debian-key.gpg] https://packages.ag-projects.com/debian/ __DISTRO__ main contrib
+```
+
+#### Ubuntu
+
+To use it for ubuntu you should put the following in /etc/apt/sources.list.d/ag-projects.list. Substitute `__DISTRO__` with your distribution name, e.g. focal, jammy...
+
+```
+deb     [signed-by=/usr/share/keyrings/agp-debian-key.gpg] https://packages.ag-projects.com/ubuntu/ __DISTRO__ main contrib
+deb-src [signed-by=/usr/share/keyrings/agp-debian-key.gpg] https://packages.ag-projects.com/ubuntu/ __DISTRO__ main contrib
+```
 
 Update the list of available packages:
 
