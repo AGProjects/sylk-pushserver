@@ -1,7 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
-# import json
-# import logging
 import re
 import sys
 import requests
@@ -119,7 +117,7 @@ if __name__ == '__main__':
                         # https://firebase.google.com/docs/cloud-messaging/http-server-ref#error-codes
                         reason = result['body']['_content']['results'][0]['error']
                         if reason == 'NotRegistered':
-                            print("Token %s must be purged" % token)
+                            # print("Token %s must be purged" % token)
                             # q = "delete from push_tokens where token = '%s'" % token   
                             # con = pymysql.connect('localhost', 'opensips', 'XYZ', 'opensips')
                             # with con: 

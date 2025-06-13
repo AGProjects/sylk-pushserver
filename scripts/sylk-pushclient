@@ -1,18 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
-import json
-import logging
 import re
 import sys
 import requests
 
-try:
-    import pymysql
-except ImportError:
-    pass
-    
 from argparse import ArgumentParser
-
 
 if __name__ == '__main__':
     parser = ArgumentParser(usage='%(prog)s [options]')
@@ -32,9 +24,15 @@ if __name__ == '__main__':
 
     from_uri = re.sub(r'^"|"$', '', options.from_uri)
     from_name = options.from_name.strip('\"') if options.from_name else None
-    
+
     try:
         (token1, token2) = options.device_token.split("#")
+    except ValueError:
+        token1 = options.device_token
+        token2 = None
+
+    try:
+        (token1, token2) = options.device_token.split("-")
     except ValueError:
         token1 = options.device_token
         token2 = None
@@ -45,22 +43,22 @@ if __name__ == '__main__':
         media_type = 'video'
     elif ("audio" in options.media_type):
         media_type = 'audio'
-    
+
     token = token2 if (token2 and options.event == 'cancel') else token1
-    
+
     log_params = {
-              'platform': options.platform,
-              'app-id': options.appid, 
-              'token': token,
-              'media-type': media_type,
-              'event': options.event,
-              'from': from_uri,
-              'from-display-name': from_name or from_uri,
-              'to': options.to_uri,
-              'device-id': options.device_id,
-              'call-id': options.call_id,
-              'silent': options.silent
-              }
+        'platform': options.platform,
+        'app-id': options.appid,
+        'token': token,
+        'media-type': media_type,
+        'event': options.event,
+        'from': from_uri,
+        'from-display-name': from_name or from_uri,
+        'to': options.to_uri,
+        'device-id': options.device_id,
+        'call-id': options.call_id,
+        'silent': options.silent
+    }
 
     try:
         r = requests.post(options.url, timeout=5, json=log_params)
@@ -74,7 +72,7 @@ if __name__ == '__main__':
                     # https://firebase.google.com/docs/cloud-messaging/http-server-ref#error-codes
                     reason = body['data']['body']['_content']['results'][0]['error']
                     if reason == 'NotRegistered':
-                        log.info("Token %s must be purged" % token)
+                        print("Token %s must be purged" % token)
                         #q = "delete from push_tokens where token = '%s'" % token   
                         #con = pymysql.connect('localhost', 'opensips', 'XYZ', 'opensips')
                         #with con: 
