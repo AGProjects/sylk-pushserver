@@ -10,21 +10,17 @@ export DH_UPGRADE_PIP := 21.2.4
 %:
 	dh $@ --buildsystem dh_virtualenv
 
-override_dh_virtualenv:
-	dh_virtualenv
-	find debian/sylk-pushserver -type d -name 'scripts-3.13' -exec rm -rf {}
-	rm -rf debian/sylk-pushserver/bdist.linux-x86_64
 
 override_dh_python3:
 	dh_python3 --shebang=/usr/lib/python3/dist-packages/sylk-pushserver/bin/python3
 
 override_dh_clean:
 	dh_clean
-	rm -rf build dist MANIFEST scripts-3.13 bdist.linux-x86_64
+	rm -rf build dist MANIFEST scripts-3.* bdist.linux-x86_64
 
 override_dh_install:
 	dh_install
-	find debian/sylk-pushserver -type d -name 'scripts-3.13' -exec rm -rf {} +
+	find debian/sylk-pushserver -type d -name 'scripts-3.*' -exec rm -rf {} +
 	find debian/sylk-pushserver -type d -name 'bdist.linux-x86_64' -exec rm -rf {} +
 	py3clean .
 
