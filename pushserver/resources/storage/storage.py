@@ -103,10 +103,10 @@ class CassandraStorage(object):
             load_balancing_policy=DCAwareRoundRobinPolicy(),
             protocol_version=4
         )
-        try:
-            connection_args['connection_class'] = asyncioreactor.AsyncioConnection
-        except NameError:
-            pass
+        # try:
+        #     connection_args['connection_class'] = asyncioreactor.AsyncioConnection
+        # except NameError:
+        #     pass
 
         try:
             connection.setup(CassandraConfig.cluster_contact_points, CassandraConfig.keyspace, **connection_args)
