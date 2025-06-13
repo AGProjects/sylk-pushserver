@@ -1,3 +1,15 @@
+sylk-pushserver (2.1.0) unstable; urgency=medium
+
+  * Added support for a token based connection to APNs
+  * Added more meaninfull error on cert error
+  * Added extra data items to sylk message payload on IOS
+  * Fixed scripts
+  * Updated docs
+  * Updated dependencies
+  * Correct typo
+
+ -- Tijmen de Mes <tijmen@ag-projects.com>  Fri, 13 Jun 2025 14:23:45 +0200
+
 sylk-pushserver (2.0.1) unstable; urgency=medium
 
   * Fixed removing expired devices when using API v2
