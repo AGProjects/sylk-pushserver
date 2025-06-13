@@ -3,8 +3,7 @@ import os
 import socket
 import ssl
 import time
-
-from httpx import Client
+from httpx import Client, ReadError
 
 from pushserver.models.requests import WakeUpRequest
 from pushserver.pns.base import PNS, PushRequest, PlatformRegister
@@ -309,7 +308,13 @@ class ApplePushRequest(PushRequest):
 
                 except socket.gaierror:
                     reason = 'socket error'
-
+                except ReadError as e:
+                    cause = e.__cause__
+                    if "unknown ca" in str(cause).lower():
+                        reason = "The connection failed because the SSL certificate is not trusted."
+                        break
+                    reason = f'{e}'
+                    break
                 except ValueError as err:
                     reason = f'Bad type of object in headers or payload: {err}'
                     break
