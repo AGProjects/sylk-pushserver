@@ -235,6 +235,16 @@ openssl rsa -in sylk.privateKey.pem -out sylk.key
 
 Use sylk.crt and sylk.key inside applications.ini config file.
 
+### Apple token
+
+Go to Apple developer website
+
+https://developer.apple.com/account/authkeys/list
+
+Create a key for APNs and set your environment and restrictions.
+
+Download the p8 file and put the file in the credentials config dir and adjust
+applications.ini with the filename, key_id and team_id.
 
 ## Installation
 

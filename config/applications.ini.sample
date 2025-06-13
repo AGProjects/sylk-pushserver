@@ -12,8 +12,46 @@
 ; app_platform = apple
 
 ; these are apple platform related settings
-; apple_certificate = credentials/com.myapp-ios.pem
-; apple_key = credentials/com.myapp-ios.key.pem
+; apple_certificate = com.myapp-ios.pem
+; apple_key = com.myapp-ios.key.pem
+; apple_push_url = api.sandbox.push.apple.com
+
+; if voip is True, different headers will be generated for the push request,
+; consult Apple documentation for more details.
+; voip = True
+
+; log the requests for remote logging
+; log_remote_urls = https://myapp.net, https://example.com
+
+; if log_remote_urls is set, a POST will be executed to the urls containing
+; the original request and the final response,:
+; payload = {'request': push_request, 'response': push_response}
+; see readme.md for a detail description
+
+
+; log_remote_timeout = 5
+
+; if the key below is defined, the logline will contain the value of the
+; key present in the json returned by the remote log server, if not key is
+; defined the entire body will be logged if debub is True, otherwise only
+; the response code will be logged
+; log_remote_key = message
+
+
+[myapp-apple2]
+; app_id = com.agprojects.sylk-ios
+
+; application type must be defince in the code, curently linphone and sylk
+; are supported
+; app_type = sylk
+
+; platform can be apple or firebase
+; app_platform = apple
+
+; these are apple platform related settings
+; apple_key = AuthKey_KEYID.p8
+; key_id = ***Key ID for key in p8 file***
+; team_id = ***The Apple Team ID for your developer team***
 ; apple_push_url = api.sandbox.push.apple.com
 
 ; if voip is True, different headers will be generated for the push request,
