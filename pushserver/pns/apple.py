@@ -1,4 +1,5 @@
 import json
+import jwt
 import os
 import socket
 import ssl
@@ -16,7 +17,7 @@ class ApplePNS(PNS):
     """
 
     def __init__(self, app_id: str, app_name: str, url_push: str,
-                 voip: bool, cert_file: str, key_file: str):
+                 voip: bool, cert_file: str, key_file: str, auth_token: str = None):
         """
         :param app_id: `str`, blunde id provided by application.
         :param url_push: `str`, URI to push a notification (from applications.ini)
@@ -30,6 +31,7 @@ class ApplePNS(PNS):
         self.voip = voip
         self.key_file = key_file
         self.cert_file = cert_file
+        self.auth_token = auth_token
 
 
 class AppleConn(ApplePNS):
@@ -39,7 +41,7 @@ class AppleConn(ApplePNS):
 
     def __init__(self, app_id: str, app_name: str, url_push: str,
                  voip: bool, cert_file: str, key_file: str,
-                 apple_pns: PNS, loggers: dict, port: int = 443):
+                 apple_pns: PNS, loggers: dict, port: int = 443, auth_token: str = None):
         """
         :param apple_pns `ApplePNS`: Apple Push Notification Service.
         :param port `int`: 443 or 2197 to allow APNS traffic but block other HTTP traffic.
@@ -53,6 +55,7 @@ class AppleConn(ApplePNS):
         self.voip = voip
         self.key_file = key_file
         self.cert_file = cert_file
+        self.auth_token = auth_token
         self.apple_pns = apple_pns
         self.port = port
         self.loggers = loggers
@@ -72,8 +75,8 @@ class AppleConn(ApplePNS):
         ssl_context = ssl.create_default_context()
         ssl_context.check_hostname = False
         ssl_context.verify_mode = ssl.CERT_NONE
-
-        ssl_context.load_cert_chain(keyfile=key_file, certfile=cert_file)
+        if not self.auth_token:
+            ssl_context.load_cert_chain(keyfile=key_file, certfile=cert_file)
 
         return ssl_context
 
@@ -93,13 +96,20 @@ class AppleConn(ApplePNS):
                             base_url=f'https://{host}:{port}',
                             verify=ssl_context)
 
-        cert_file_name = self.cert_file.split('/')[-1]
+        if self.cert_file:
+            cert_file_name = self.cert_file.split('/')[-1]
         key_file_name = self.key_file.split('/')[-1] if self.key_file else None
 
         if key_file_name:
-            msg = f'{self.app_name.capitalize()} app: Connecting to {host}:{port} ' \
-                  f'using {cert_file_name} certificate ' \
-                  f'and {key_file_name} key files'
+            if not self.auth_token:
+                msg = f'{self.app_name.capitalize()} app: Connecting to {host}:{port} ' \
+                      f'using {cert_file_name} certificate ' \
+                      f'and {key_file_name} key files'
+            else:
+                msg = f'{self.app_name.capitalize()} app: Connecting to {host}:{port} ' \
+                      f'using JWT token ' \
+                      f'with {key_file_name} key file'
+
         else:
             msg = f'{self.app_name.capitalize()} app: Connecting to {host}:{port} ' \
                   f'using {cert_file_name} certificate'
@@ -110,6 +120,8 @@ class AppleConn(ApplePNS):
 
 
 class AppleRegister(PlatformRegister):
+    TOKEN_TTL = 30 * 60
+
     def __init__(self, app_id: str, app_name: str, voip: bool,
                  credentials_path: str, config_dict: dict, loggers: dict):
 
@@ -119,7 +131,8 @@ class AppleRegister(PlatformRegister):
         self.credentials_path = credentials_path
         self.config_dict = config_dict
         self.loggers = loggers
-
+        self.__issued_at = None
+        self.__auth_token = None
         self.error = ''
 
     @property
@@ -184,33 +197,68 @@ class AppleRegister(PlatformRegister):
                 return
 
     @property
+    def jwt_token(self):
+        try:
+            key_file = self.key.get('key_file')
+            key_id = self.config_dict['key_id']
+            team_id = self.config_dict['team_id']
+        except KeyError:
+            return None
+
+        now = time.time()
+
+        with open(key_file, 'r') as f:
+            key = f.read()
+            self.__issued_at = int(now)
+            if not self.__auth_token or self.__issued_at < now - self.TOKEN_TTL:
+                token = jwt.encode(
+                    payload={"iss": team_id, "iat": self.__issued_at},
+                    key=key,
+                    algorithm="ES256",
+                    headers={"kid": key_id}
+                )
+                self.__auth_token = token
+            return self.__auth_token
+        return None
+
+    @property
     def apple_pns(self) -> ApplePNS:
         if self.error:
             return
 
-        if self.ssl_valid_cert:
-            cert_file = self.certificate.get('cert_file')
-            key_file = self.key.get('key_file')
-
-            return ApplePNS(app_id=self.app_id,
-                            app_name=self.app_name,
-                            url_push=self.url_push,
-                            voip=self.voip,
-                            cert_file=cert_file,
-                            key_file=key_file)
+        args = {
+            'app_id': self.app_id,
+            'app_name': self.app_name,
+            'url_push': self.url_push,
+            'voip': self.voip,
+            'cert_file': '',
+            'key_file': self.key.get('key_file'),
+        }
+        if self.jwt_token:
+            args['auth_token'] = self.jwt_token
+        else:
+            args['cert_file'] = self.certificate.get('cert_file')
+        return ApplePNS(**args)
 
     @property
     def apple_conn(self):
         if self.error:
             return
-        return AppleConn(app_id=self.app_id,
-                         app_name=self.app_name,
-                         url_push=self.url_push,
-                         voip=self.voip,
-                         cert_file=self.certificate.get('cert_file'),
-                         key_file=self.key.get('key_file'),
-                         apple_pns=self.apple_pns,
-                         loggers=self.loggers).connection
+        args = {
+            'app_id': self.app_id,
+            'app_name': self.app_name,
+            'url_push': self.url_push,
+            'voip': self.voip,
+            'key_file': self.key.get('key_file'),
+            'cert_file': '',
+            'apple_pns': self.apple_pns,
+            'loggers': self.loggers
+        }
+        if self.jwt_token:
+            args['auth_token'] = self.jwt_token
+        else:
+            args['cert_file'] = self.certificate.get('cert_file')
+        return AppleConn(**args).connection
 
     @property
     def register_entries(self):
@@ -293,6 +341,7 @@ class ApplePushRequest(PushRequest):
             if self.connection:
                 try:
                     self.log_request(path=log_path)
+
                     response = self.connection.post(self.path,
                                                     data=self.payload,
                                                     headers=self.headers)

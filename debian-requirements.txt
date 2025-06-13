@@ -3,3 +3,4 @@ httpx[http2] >= 0.21.1
 pydantic >= 1.4
 uvicorn >= 0.11.3
 websockets >= 10.4
+PyJWT[crypto] >= 2.10.1

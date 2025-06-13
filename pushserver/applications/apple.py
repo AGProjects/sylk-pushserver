@@ -1,3 +1,6 @@
+from pushserver.resources import settings
+
+
 __all__ = ['AppleHeaders', 'ApplePayload']
 
 
@@ -42,6 +45,8 @@ class AppleHeaders(object):
         self.apns_expiration = self.create_expiration()
         self.apns_topic = self.create_topic()
         self.apns_priority = self.create_priority()
+
+        self.auth_token = settings.params.pns_register[(self.app_id, 'apple')]['pns'].auth_token
 
     def create_push_type(self) -> str:
         """
@@ -92,7 +97,10 @@ class AppleHeaders(object):
             'apns-expiration': self.apns_expiration,
             'apns-priority': self.apns_priority,
             'apns-topic': self.apns_topic,
-            'authorization': f"bearer {self.token}"}
+        }
+
+        if self.auth_token:
+            headers['authorization'] = f"bearer {self.auth_token}"
 
         if self.apns_push_type == 'background':
             headers['content-available'] = '1'

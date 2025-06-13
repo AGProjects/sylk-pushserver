@@ -8,4 +8,4 @@ cysystemd >= 1.5.3
 uvicorn >=  0.11.8
 #firebase-admin
 cassandra-driver == 3.24.0
-python3-application @ git+https://github.com/AGProjects/python3-application@release-3.0.4
+python3-application @ git+https://github.com/AGProjects/python3-application@release-3.0.9
