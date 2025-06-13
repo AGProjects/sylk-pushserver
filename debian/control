@@ -26,6 +26,7 @@ Depends: ${misc:Depends}, ${shlibs:Depends}, sensible-utils,
          python3-click (>= 7.0),
          python3-uvloop (>= 0.11.2),
          python3-httptools (>= 0.0.11),
+         python3-jwt,
          python3-cassandra | python-cassandra
 Enhances: sylkserver-webrtc-gateway
 Description: Mobile push notifications for RTC infrastructures
