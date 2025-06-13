@@ -1,2 +1,4 @@
 usr/lib/python3/dist-packages/sylk-pushserver/bin/sylk-pushserver usr/bin/sylk-pushserver
 usr/lib/python3/dist-packages/sylk-pushserver/bin/sylk-pushclient usr/bin/sylk-pushclient
+usr/lib/python3/dist-packages/sylk-pushserver/bin/sylk-pushclient-v2 usr/bin/sylk-pushclient-v2
+usr/lib/python3/dist-packages/sylk-pushserver/bin/sylk-pushserver-db usr/bin/sylk-pushserver-db
