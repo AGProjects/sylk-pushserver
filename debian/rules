@@ -20,10 +20,12 @@ override_dh_python3:
 
 override_dh_clean:
 	dh_clean
-	rm -rf build dist MANIFEST
+	rm -rf build dist MANIFEST scripts-3.13 bdist.linux-x86_64
 
 override_dh_install:
 	dh_install
+	find debian/sylk-pushserver -type d -name 'scripts-3.13' -exec rm -rf {} +
+	find debian/sylk-pushserver -type d -name 'bdist.linux-x86_64' -exec rm -rf {} +
 	py3clean .
 
 override_dh_installsystemd:
