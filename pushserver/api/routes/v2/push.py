@@ -64,6 +64,9 @@ async def task_push(account: str,
         if push_parameters['event'] == 'cancel' and push_parameters['background_token'] is not None:
             reversed_push_parameters['token'] = push_parameters['background_token']
 
+        # if push_parameters['silent']:
+        #    continue
+
         try:
             wp = WakeUpRequest(**reversed_push_parameters)
         except ValidationError as e:
@@ -187,6 +190,9 @@ async def push_requests(account: str,
                 # Use background_token for cancel and message
                 if push_parameters['event'] in ('cancel', 'message') and push_parameters['background_token'] is not None:
                     reversed_push_parameters['token'] = push_parameters['background_token']
+
+                # if push_parameters['silent']:
+                #    continue
 
                 try:
                     wp = WakeUpRequest(**reversed_push_parameters)
