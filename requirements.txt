@@ -7,5 +7,6 @@ requests >= 2.23.0
 cysystemd >= 1.5.3
 uvicorn >=  0.11.8
 #firebase-admin
-cassandra-driver == 3.24.0
+cassandra-driver == 3.29.2
 python3-application @ git+https://github.com/AGProjects/python3-application@release-3.0.9
+PyJWT[crypto] >= 2.10.1
