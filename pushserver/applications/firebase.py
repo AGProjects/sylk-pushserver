@@ -115,6 +115,11 @@ class FirebasePayload(object):
         self.filename = filename
         self.filetype = filetype
 
+        try:
+            self.auth_file = settings.params.pns_register[(self.app_id, 'firebase')]['auth_file']
+        except KeyError:
+            self.auth_file = None
+
     @property
     def payload(self) -> dict:
         """

@@ -116,13 +116,28 @@ class FirebaseLinphonePayload(FirebasePayload):
         now = datetime.now()
         send_time = now.strftime('%Y-%m-%d %H:%M:%S')
 
+        data = {'call-id': self.call_id,
+                'sip-from': self.sip_from,
+                'loc-key': '',
+                'loc-args': self.sip_from,
+                'send-time': send_time}
+
         payload = {'to': self.token,
                    'time_to_live': 2419199,
                    'priority': 'high',
-                   'data': {'call-id': self.call_id,
-                            'sip-from': self.sip_from,
-                            'loc-key': '',
-                            'loc-args': self.sip_from,
-                            'send-time': send_time}}
+                   'data': data}
+
+        if self.auth_file:
+            payload = {
+                'message': {
+                    'token': self.token,
+                    'data': data,
+                    'android': {
+                        'priority': 'high',
+                        'ttl': '60s'
+                    }
+                }
+            }
+
         return payload
 
