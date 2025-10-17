@@ -12,7 +12,7 @@ class AppleHeaders(object):
     def __init__(self, app_id: str, event: str, token: str,
                  call_id: str, sip_from: str, from_display_name: str,
                  sip_to: str, media_type: str, silent: bool, reason: str,
-                 badge: int, filename: str, filetype: str):
+                 badge: int, filename: str, filetype: str, account: str):
         """
         :param app_id: `str` id provided by the mobile application (bundle id)
         :param event: `str` 'incoming_session', 'incoming_conference', 'cancel' or 'message'
@@ -40,6 +40,7 @@ class AppleHeaders(object):
         self.badge = badge
         self.filename = filename
         self.filetype = filetype
+        self.account = account
 
         self.apns_push_type = self.create_push_type()
         self.apns_expiration = self.create_expiration()
@@ -116,7 +117,7 @@ class ApplePayload(object):
     def __init__(self, app_id: str, event: str, token: str,
                  call_id: str, sip_from: str, from_display_name: str,
                  sip_to: str, media_type, silent: bool, reason: str,
-                 badge: int, filename: str, filetype: str):
+                 badge: int, filename: str, filetype: str, account: str):
         """
         :param app_id: `str` id provided by the mobile application (bundle id)
         :param event: `str` 'incoming_session', 'incoming_conference', 'cancel' or 'message'
@@ -143,6 +144,7 @@ class ApplePayload(object):
         self.badge = badge
         self.filename = filename
         self.filetype = filetype
+        self.account = account
 
     @property
     def payload(self) -> dict:

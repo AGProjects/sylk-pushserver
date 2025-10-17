@@ -8,7 +8,7 @@ class FirebaseHeaders(object):
     def __init__(self, app_id: str, event: str, token: str,
                  call_id: str, sip_from: str, from_display_name: str,
                  sip_to: str, media_type: str, silent: bool, reason: str,
-                 badge: int, filename: str, filetype: str):
+                 badge: int, filename: str, filetype: str, account: str):
         """
         :param app_id: `str` id provided by the mobile application (bundle id)
         :param event: `str` 'incoming_session', 'incoming_conference', 'cancel' or 'message'
@@ -36,6 +36,7 @@ class FirebaseHeaders(object):
         self.badge = badge
         self.filename = filename
         self.filetype = filetype
+        self.account = account
 
         try:
             self.auth_key = settings.params.pns_register[(self.app_id, 'firebase')]['auth_key']
@@ -87,7 +88,7 @@ class FirebasePayload(object):
     def __init__(self, app_id: str, event: str, token: str,
                  call_id: str, sip_from: str, from_display_name: str,
                  sip_to: str, media_type: str, silent: bool, reason: str,
-                 badge: int, filename: str, filetype: str):
+                 badge: int, filename: str, filetype: str, account: str):
         """
         :param app_id: `str` id provided by the mobile application (bundle id)
         :param event: `str` 'incoming_session', 'incoming_conference', 'cancel' or 'message'
@@ -114,6 +115,7 @@ class FirebasePayload(object):
         self.badge = badge
         self.filename = filename
         self.filetype = filetype
+        self.account = account
 
         try:
             self.auth_file = settings.params.pns_register[(self.app_id, 'firebase')]['auth_file']

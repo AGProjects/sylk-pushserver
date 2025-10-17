@@ -129,6 +129,7 @@ class PushRequest(BaseModel):
     badge: int = 1
     filename: str = None
     filetype: str = None
+    account: str = None
 
     class Config:
         alias_generator = alias_rename
@@ -151,6 +152,7 @@ class WakeUpRequest(BaseModel):
     badge: int = 1
     filename: str = None
     filetype: str = None
+    account: str = None
 
     class Config:
         alias_generator = alias_rename

@@ -141,6 +141,8 @@ class AppleSylkPayload(ApplePayload):
                 'from_display_name': self.from_display_name,
                 'to_uri': self.sip_to
             }
+            if self.event in ('incoming_conference_request'):
+                payload['account'] = self.account
 
         return payload
 
@@ -196,6 +198,8 @@ class FirebaseSylkPayload(FirebasePayload):
                 'from_display_name': from_display_name,
                 'to_uri': self.sip_to
             }
+            if self.event in ('incoming_conference_request'):
+                data['account'] = self.account
 
         http_payload = {
             'message': {
