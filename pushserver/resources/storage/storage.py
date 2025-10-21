@@ -71,7 +71,7 @@ class FileStorage(object):
         background_token = None
         if contact_params.platform == 'apple':
             try:
-                (token, background_token) = contact_params.token.split('-')
+                (token, background_token) = contact_params.token.split('-', 1)
             except ValueError:
                 pass
 
@@ -138,7 +138,7 @@ class CassandraStorage(object):
         background_token = None
         if contact_params.platform == 'apple':
             try:
-                (token, background_token) = contact_params.token.split('-')
+                (token, background_token) = contact_params.token.split('-', 1)
             except ValueError:
                 pass
 
