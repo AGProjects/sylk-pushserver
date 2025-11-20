@@ -130,6 +130,8 @@ class PushRequest(BaseModel):
     filename: str = None
     filetype: str = None
     account: str = None
+    content: str = None
+    content_type: str = None
 
     class Config:
         alias_generator = alias_rename
@@ -153,6 +155,8 @@ class WakeUpRequest(BaseModel):
     filename: str = None
     filetype: str = None
     account: str = None
+    content: str = None
+    content_type: str = None
 
     class Config:
         alias_generator = alias_rename
