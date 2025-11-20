@@ -223,11 +223,6 @@ class FirebaseSylkPayload(FirebasePayload):
                 'message': {
                     'token': self.token,
                     'data': data,
-                    'notification': {
-                        'title': 'New message',
-                        'body': 'From %s' % self.sip_from,
-                        'image': 'https://icanblink.com/apple-touch-icon-180x180.png'
-                    },
                     'apns': {
                         'headers': {
                             'apns-priority': '5',
@@ -236,12 +231,6 @@ class FirebaseSylkPayload(FirebasePayload):
                     'android': {
                         'priority': 'high',
                         'ttl': '60s',
-                        'notification': {
-                            'channel_id': 'sylk-messages-sound',
-                            'sound': 'default',
-                            'default_sound': True,
-                            'notification_priority': 'PRIORITY_HIGH'
-                        }
                     }
                 }
             }
