@@ -106,8 +106,11 @@ class AppleSylkPayload(ApplePayload):
                 },
                 'data': {
                     'event': self.event,
+                    'message_id': self.call_id,
                     'from_uri': self.sip_from,
                     'to_uri': self.sip_to,
+                    'content': self.content,
+                    'content_type': self.content_type
                 }
             }
         elif self.event == 'transfer':
@@ -174,8 +177,11 @@ class FirebaseSylkPayload(FirebasePayload):
         elif self.event == 'message':
             data = {
                 'event': self.event,
+                'message_id': self.call_id,
                 'from_uri': self.sip_from,
-                'to_uri': self.sip_to
+                'to_uri': self.sip_to,
+                'content': self.content,
+                'content_type': self.content_type
             }
         elif self.event == 'transfer':
             data = {
