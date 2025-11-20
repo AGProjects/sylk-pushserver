@@ -1,19 +1,16 @@
-import os
-import _pickle as pickle
-
 import logging
+import os
+from collections import defaultdict
 
+import _pickle as pickle
 from application.python.types import Singleton
 from application.system import makedirs
-
-from collections import defaultdict
 
 from pushserver.resources import settings
 from pushserver.resources.utils import log_event
 
 from .configuration import CassandraConfig, ServerConfig
 from .errors import StorageError
-
 
 __all__ = 'TokenStorage'
 
@@ -31,15 +28,16 @@ else:
     else:
         CASSANDRA_MODULES_AVAILABLE = True
         from cassandra import InvalidRequest
+        from cassandra.cluster import NoHostAvailable
         from cassandra.cqlengine import CQLEngineException
         from cassandra.cqlengine.query import LWTException
-        from cassandra.cluster import NoHostAvailable
         try:
             from cassandra.io import asyncioreactor
         except ImportError:
             pass
         from cassandra.policies import DCAwareRoundRobinPolicy
-        from pushserver.models.cassandra import PushTokens, OpenSips
+
+        from pushserver.models.cassandra import OpenSips, PushTokens
         if CassandraConfig.table:
             PushTokens.__table_name__ = CassandraConfig.table
 

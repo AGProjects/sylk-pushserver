@@ -1,5 +1,6 @@
-from pushserver.resources import settings
 from oauth2client.service_account import ServiceAccountCredentials
+
+from pushserver.resources import settings
 
 __all__ = ['FirebaseHeaders', 'FirebasePayload']
 
