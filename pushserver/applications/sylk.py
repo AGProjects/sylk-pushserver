@@ -101,6 +101,7 @@ class AppleSylkPayload(ApplePayload):
                     },
                     'message_id': self.call_id,
                     "sound": "default",
+                    "content-available": 1,
                     "badge": self.badge,
                 },
                 'data': {
