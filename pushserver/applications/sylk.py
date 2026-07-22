@@ -97,18 +97,28 @@ class AppleSylkPayload(ApplePayload):
             payload = {
                 'aps': {
                     'alert': {
-                        'title': 'New message',
+                        # Prefer the sender-declared display name when the
+                        # event carries one; on iOS the app's notification
+                        # service extension (mutable-content below) then
+                        # overrides the title with the RECEIVER's locally
+                        # saved contact name when it knows one.
+                        'title': self.from_display_name or 'New message',
                         'body': 'From %s' % self.sip_from,
                     },
                     'message_id': self.call_id,
                     "sound": "default",
                     "content-available": 1,
+                    # Invoke the app's Notification Service Extension
+                    # (SylkNotificationService) so it can rewrite the
+                    # title before iOS displays the banner.
+                    "mutable-content": 1,
                     "badge": self.badge,
                 },
                 'data': {
                     'event': self.event,
                     'message_id': self.call_id,
                     'from_uri': self.sip_from,
+                    'from_display_name': self.from_display_name,
                     'to_uri': self.sip_to,
                     'content': self.content,
                     'content_type': self.content_type
@@ -122,11 +132,14 @@ class AppleSylkPayload(ApplePayload):
                         'body': 'From %s' % self.sip_from,
                     },
                     "sound": "default",
+                    # Same NSE title rewrite as the 'message' event above.
+                    "mutable-content": 1,
                     "badge": self.badge,
                 },
                 'data': {
                     'event': self.event,
                     'from_uri': self.sip_from,
+                    'from_display_name': self.from_display_name,
                     'to_uri': self.sip_to,
                     'file-id': self.call_id,
                     'media-type': self.media_type,
