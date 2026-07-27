@@ -1,3 +1,16 @@
+sylk-pushserver (2.2.0) unstable; urgency=medium
+
+  * Allow iOS push notification to be modified by the receiving client
+  * Added missing parts for message payload and contact type support
+  * Update android payload for sylk app
+  * Added message payload and contact type for sylk app
+  * Fix iOS payload for sylk
+  * Fixed splitting push tokens
+  * Added support for account field in push for incoming conference
+  * Support FCM v1 api in linphone app
+
+ -- Tijmen de Mes <tijmen@ag-projects.com>  Mon, 27 Jul 2026 12:06:35 +0200
+
 sylk-pushserver (2.1.0) unstable; urgency=medium
 
   * Added support for a token based connection to APNs
